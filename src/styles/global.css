@@ -2018,6 +2018,7 @@ a {
   width: min(1537px, 100%);
   height: 585px;
   margin: 40px auto 0;
+  overflow: visible;
 }
 .integration-core {
   position: absolute;
@@ -2138,6 +2139,7 @@ a {
   height: 100%;
   pointer-events: none;
   z-index: 1;
+  overflow: visible;
 }
 .connector {
   display: none;
