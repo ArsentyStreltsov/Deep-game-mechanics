@@ -1,0 +1,49 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/sections/Hero';
+import Audience from '@/components/sections/Audience';
+import CaseStudy from '@/components/sections/CaseStudy';
+import Mechanics from '@/components/sections/Mechanics';
+import Configurator from '@/components/sections/Configurator';
+import Analytics from '@/components/sections/Analytics';
+import Integrations from '@/components/sections/Integrations';
+import FAQ from '@/components/sections/FAQ';
+import { figmaAssets } from '@/lib/figma-assets';
+import { navigation } from '@/data/landing';
+---
+
+<BaseLayout
+  title="Deep — игровые механики для команды"
+  description="Игровые механики, спецпроекты и цифровые платформы для сотрудников и клиентов."
+>
+  <main class="landing-page">
+    <Hero client:load />
+    <Audience client:load />
+    <CaseStudy client:load />
+    <Mechanics client:load />
+    <Configurator client:load />
+    <Analytics client:load />
+    <Integrations client:load />
+    <FAQ client:load />
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer__bar">
+      <a
+        class="site-footer__brand"
+        href="#top"
+        aria-label="Deep — на главную"
+      >
+        <img src={figmaAssets.logo} alt="deep creative / digital" />
+      </a>
+      <nav class="site-footer__nav" aria-label="Навигация в подвале">
+        {
+          navigation.map(([label, href]) => (
+            <a href={href}>{label}</a>
+          ))
+        }
+      </nav>
+      <a class="site-footer__cta" href="#configurator">Обсудить проект</a>
+    </div>
+    <small>© {new Date().getFullYear()} Deep creative / digital</small>
+  </footer>
+</BaseLayout>
