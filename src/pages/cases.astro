@@ -1,0 +1,77 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { BrandMark } from '@/components/ui/BrandMark';
+import {
+  caseCategories,
+  cases,
+  navigation,
+  navHref,
+} from '@/data/landing';
+
+const pathname = Astro.url.pathname;
+---
+
+<BaseLayout
+  title="Кейсы — Deep"
+  description="Проекты Deep: HR и внутриком, лояльность, мероприятия, спецпроекты и трейд-маркетинг."
+>
+  <main class="cases-page">
+    <header class="cases-page__bar">
+      <a class="cases-page__brand" href="/" aria-label="Deep — на главную">
+        <BrandMark />
+      </a>
+      <nav class="cases-page__nav" aria-label="Основная навигация">
+        {
+          navigation.map(([label, href]) => (
+            <a href={navHref(href, pathname)}>{label}</a>
+          ))
+        }
+      </nav>
+      <a class="brief-button" href="/#configurator">Отправить бриф</a>
+    </header>
+    <section class="cases-page__intro section-shell">
+      <h1 class="section-title">Все <span>кейсы</span></h1>
+      <p class="section-lead">
+        Примеры проектов на платформенной базе Deep. Механика, сценарий и
+        интеграции каждый раз собираются под задачу клиента.
+      </p>
+    </section>
+    <section class="cases-page__grid section-shell" aria-label="Список кейсов">
+      {
+        cases.map((item) => {
+          const category =
+            caseCategories.find((entry) => entry.id === item.categoryId)?.title ??
+            item.categoryId;
+          return (
+            <article class={`cases-card cases-card--${item.artwork}`}>
+              <div class="cases-card__art" aria-hidden="true" />
+              <div class="cases-card__body">
+                <span>{category}</span>
+                <h2>
+                  {item.brand} — {item.title}
+                </h2>
+                <p>{item.description}</p>
+              </div>
+            </article>
+          );
+        })
+      }
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer__bar">
+      <a class="site-footer__brand" href="/" aria-label="Deep — на главную">
+        <BrandMark />
+      </a>
+      <nav class="site-footer__nav" aria-label="Навигация в подвале">
+        {
+          navigation.map(([label, href]) => (
+            <a href={navHref(href, pathname)}>{label}</a>
+          ))
+        }
+      </nav>
+      <a class="site-footer__cta" href="/#configurator">Обсудить проект</a>
+    </div>
+    <small>© {new Date().getFullYear()} Deep creative / digital</small>
+  </footer>
+</BaseLayout>

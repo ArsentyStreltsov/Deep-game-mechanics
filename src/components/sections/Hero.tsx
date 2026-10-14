@@ -1,6 +1,6 @@
-import { figmaAssets } from '@/lib/figma-assets';
-import { navigation } from '@/data/landing';
+import { heroSubtitle, navigation } from '@/data/landing';
 import { ArrowButton } from '@/components/ui/ArrowButton';
+import { BrandMark } from '@/components/ui/BrandMark';
 import { HeroCarousel } from '@/components/sections/HeroCarousel';
 
 export default function Hero() {
@@ -8,8 +8,6 @@ export default function Hero() {
     <section className="hero" id="top" aria-labelledby="hero-title">
       <div className="hero__surface" aria-hidden="true">
         <div className="hero__grain" />
-        <img className="hero__backdrop" src={figmaAssets.heroBackground} alt="" />
-        <img className="hero__glow" src={figmaAssets.heroGlow} alt="" />
       </div>
       <header className="site-header">
         <a
@@ -17,7 +15,7 @@ export default function Hero() {
           href="#top"
           aria-label="Deep — на главную"
         >
-          <img src={figmaAssets.logo} alt="deep creative / digital" />
+          <BrandMark />
         </a>
         <nav className="site-nav" aria-label="Основная навигация">
           {navigation.map(([label, href]) => (
@@ -37,12 +35,10 @@ export default function Hero() {
           команды — быстро
         </h1>
         <p>
-          Берём на себя разработку, дизайн и тексты. Запускаем от одной недели и
-          адаптируем готовые
-          <br className="desktop-break" /> решения под ваш бренд и задачу
+          {heroSubtitle}
         </p>
         <div className="hero__actions">
-          <a className="hero__secondary" href="#cases">
+          <a className="hero__secondary" href="#mechanics">
             Смотреть возможности
           </a>
           <ArrowButton href="#configurator">Обсудить проект</ArrowButton>

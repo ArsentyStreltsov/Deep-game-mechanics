@@ -6,9 +6,8 @@ import CaseStudy from '@/components/sections/CaseStudy';
 import Mechanics from '@/components/sections/Mechanics';
 import Configurator from '@/components/sections/Configurator';
 import Analytics from '@/components/sections/Analytics';
-import Integrations from '@/components/sections/Integrations';
 import FAQ from '@/components/sections/FAQ';
-import { figmaAssets } from '@/lib/figma-assets';
+import { BrandMark } from '@/components/ui/BrandMark';
 import { navigation } from '@/data/landing';
 ---
 
@@ -23,7 +22,6 @@ import { navigation } from '@/data/landing';
     <Mechanics client:load />
     <Configurator client:load />
     <Analytics client:load />
-    <Integrations client:load />
     <FAQ client:load />
   </main>
   <footer class="site-footer">
@@ -33,7 +31,7 @@ import { navigation } from '@/data/landing';
         href="#top"
         aria-label="Deep — на главную"
       >
-        <img src={figmaAssets.logo} alt="deep creative / digital" />
+        <BrandMark />
       </a>
       <nav class="site-footer__nav" aria-label="Навигация в подвале">
         {
