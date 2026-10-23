@@ -28,22 +28,24 @@ export default function Hero() {
           Отправить бриф
         </a>
       </header>
-      <div className="hero__content">
-        <h1 id="hero-title">
-          <span>Игровые механики</span> для
-          <br />
-          команды — быстро
-        </h1>
-        <p>
-          {heroSubtitle}
-        </p>
-        <div className="hero__actions">
-          <a className="hero__secondary" href="#mechanics">
-            Смотреть возможности
-          </a>
-          <ArrowButton href="#configurator">Обсудить проект</ArrowButton>
+      <div className="hero__body">
+        <div className="hero__content">
+          <h1 id="hero-title">
+            <span>Игровые механики</span> для
+            <br />
+            команды — быстро
+          </h1>
+          <p>{heroSubtitle}</p>
+          <div className="hero__actions">
+            <a className="hero__secondary" href="#mechanics">
+              Смотреть возможности
+            </a>
+            <ArrowButton href="#configurator">Обсудить проект</ArrowButton>
+          </div>
         </div>
-        <HeroCarousel />
+        <div className="hero__stage">
+          <HeroCarousel />
+        </div>
       </div>
     </section>
   );
