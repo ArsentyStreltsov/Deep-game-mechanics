@@ -614,6 +614,11 @@ export const customScenario = {
   accent: 'green' as Accent,
 } as const;
 
+/** Чёткая версия иллюстрации (рядом лежит `<имя>-sharp.webp`): показывается при наведении на карточку. */
+export function sharpImage(image: string) {
+  return image.replace(/\.webp$/, '-sharp.webp');
+}
+
 export type AudienceCard = {
   id: string;
   title: string;

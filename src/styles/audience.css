@@ -2,7 +2,8 @@
    Карточка: текст слева (заголовок, короткая фраза, теги), справа — минималистичная иконка.
    Иконки — плоские глифы с мягким размытым краем и лёгким свечением (как значки услуг на
    deep-agency.ru), у каждой задачи свой цвет из палитры accent.css: карточка читает его
-   из --accent / --accent-rgb (атрибут data-accent).
+   из --accent / --accent-rgb (атрибут data-accent). При наведении на карточку иконка
+   становится чёткой: рядом с каждой лежит <имя>-sharp.webp той же формы и размера.
    Подключается после theme-deep.css; селекторы с .audience, чтобы перебить
    одиночные классы и медиазапросы из global.css. */
 
@@ -104,20 +105,61 @@
   border-color: rgb(var(--accent-rgb) / 0.32);
 }
 
+/* Иконка — два слоя: мягкая (в покое) и чёткая. При наведении на карточку чёткая проявляется,
+   мягкая гаснет — как «наводка на резкость». Мягкая гаснет с небольшой задержкой (а при уходе
+   чёткая — тоже), чтобы в середине перехода иконка не становилась полупрозрачной. */
 .audience .audience-card__art {
+  position: relative;
+  display: block;
   width: var(--art);
   height: var(--art);
   margin-block: -12px;
-  object-fit: contain;
   pointer-events: none;
   user-select: none;
   transition:
     transform 420ms cubic-bezier(0.3, 1.4, 0.5, 1),
     filter 320ms ease;
 }
+.audience .audience-card__art img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.audience .audience-card__art-soft {
+  opacity: 1;
+  transition: opacity 260ms ease;
+}
+.audience .audience-card__art-sharp {
+  opacity: 0;
+  transition: opacity 260ms ease 100ms;
+}
 .audience .audience-card:hover .audience-card__art {
   transform: scale(1.08) rotate(-3deg);
-  filter: drop-shadow(0 0 22px rgb(var(--accent-rgb) / 0.35));
+  filter: drop-shadow(0 0 18px rgb(var(--accent-rgb) / 0.3));
+}
+@media (hover: hover) {
+  .audience .audience-card:hover .audience-card__art-sharp {
+    opacity: 1;
+    transition-delay: 0ms;
+  }
+  .audience .audience-card:hover .audience-card__art-soft {
+    opacity: 0;
+    transition-delay: 120ms;
+  }
+}
+/* то же при фокусе с клавиатуры (отдельным правилом: без :has() его просто пропустят) */
+@supports selector(:has(*)) {
+  .audience .audience-card:has(:focus-visible) .audience-card__art-sharp {
+    opacity: 1;
+    transition-delay: 0ms;
+  }
+  .audience .audience-card:has(:focus-visible) .audience-card__art-soft {
+    opacity: 0;
+    transition-delay: 120ms;
+  }
 }
 
 /* ширина карточки меньше ~550px (планшет, телефон): заголовок и иллюстрация в одной строке,
@@ -165,7 +207,9 @@
 @media (prefers-reduced-motion: reduce) {
   .audience .audience-card,
   .audience .audience-card::before,
-  .audience .audience-card__art {
+  .audience .audience-card__art,
+  .audience .audience-card__art-soft,
+  .audience .audience-card__art-sharp {
     transition: none;
   }
   .audience .audience-card:hover .audience-card__art {
