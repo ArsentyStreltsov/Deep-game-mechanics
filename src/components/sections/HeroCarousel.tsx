@@ -582,6 +582,8 @@ export function HeroCarousel() {
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(true);
   const resumeTimerRef = useRef<number | null>(null);
+  /** Мышь над слайдером: пока она там, автопрокрутка не возобновляется (клик по карточке — чтобы её прочитать). */
+  const hoverRef = useRef(false);
   const dragRef = useRef<{
     pointerId: number | null;
     startX: number;
@@ -609,8 +611,9 @@ export function HeroCarousel() {
       window.clearTimeout(resumeTimerRef.current);
     }
     resumeTimerRef.current = window.setTimeout(() => {
-      setPaused(false);
       resumeTimerRef.current = null;
+      if (hoverRef.current) return;
+      setPaused(false);
     }, AUTOPLAY_MS);
   }, []);
 
@@ -701,8 +704,8 @@ export function HeroCarousel() {
       drag.dragging = true;
       drag.moved = false;
       pauseAutoplay();
-      event.currentTarget.setPointerCapture(event.pointerId);
-      event.currentTarget.classList.add('is-dragging');
+      // Захват указателя включаем не сразу, а когда пользователь реально потащил (см. onPointerMove):
+      // при захвате браузер отправляет click на сам слайдер, и клик по соседней карточке до неё не доходит.
     },
     [pauseAutoplay],
   );
@@ -712,8 +715,10 @@ export function HeroCarousel() {
       const drag = dragRef.current;
       if (!drag.dragging || drag.pointerId !== event.pointerId) return;
       drag.lastX = event.clientX;
-      if (Math.abs(event.clientX - drag.startX) > 8) {
+      if (!drag.moved && Math.abs(event.clientX - drag.startX) > 8) {
         drag.moved = true;
+        event.currentTarget.setPointerCapture(event.pointerId);
+        event.currentTarget.classList.add('is-dragging');
       }
     },
     [],
@@ -725,7 +730,9 @@ export function HeroCarousel() {
       if (!drag.dragging || drag.pointerId !== event.pointerId) return;
       drag.dragging = false;
       drag.pointerId = null;
-      event.currentTarget.releasePointerCapture(event.pointerId);
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
       event.currentTarget.classList.remove('is-dragging');
 
       const deltaX = drag.lastX - drag.startX;
@@ -779,12 +786,20 @@ export function HeroCarousel() {
         onPointerUp={endDrag}
         onPointerCancel={onPointerCancel}
         onPointerEnter={(event) => {
-          if (event.pointerType === 'mouse') pauseAutoplay();
+          if (event.pointerType !== 'mouse') return;
+          hoverRef.current = true;
+          pauseAutoplay();
         }}
         onPointerLeave={(event) => {
-          if (event.pointerType === 'mouse' && !dragRef.current.dragging) {
-            resumeAutoplaySoon();
+          if (event.pointerType !== 'mouse') return;
+          hoverRef.current = false;
+          const drag = dragRef.current;
+          // Нажали и ушли за край слайдера, не успев потащить: захвата ещё нет, отпускание сюда не придёт.
+          if (drag.dragging && !drag.moved) {
+            drag.dragging = false;
+            drag.pointerId = null;
           }
+          if (!drag.dragging) resumeAutoplaySoon();
         }}
       >
         <div className="showcase__scene" id="showcase-scene" ref={sceneRef}>
