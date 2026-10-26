@@ -54,6 +54,8 @@ export default function Audience() {
                       className="audience-card__link"
                       href="#configurator"
                       data-open-contact
+                      data-contact-context={item.title}
+                      data-contact-source="audience-custom"
                       aria-label={`${item.title} — ${more.toLocaleLowerCase('ru-RU')}`}
                     >
                       {item.title}
@@ -99,9 +101,10 @@ export default function Audience() {
       <a
         className="telegram-banner"
         data-reveal
-        href="#cases"
-        data-case-category="events"
-        data-case-id="telegram-bots"
+        href="#configurator"
+        data-open-contact
+        data-contact-context="Telegram-бот с web app"
+        data-contact-source="audience-telegram"
       >
         <IconTile>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

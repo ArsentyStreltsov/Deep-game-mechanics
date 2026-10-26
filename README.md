@@ -1,43 +1,87 @@
-# HR Landing
+# Deep — лендинг «Игровые механики для HR и маркетинга»
 
-Astro application with TypeScript strict mode and React support for interactive islands. Static output is configured. The Figma page is not implemented yet.
+Статический сайт на Astro 7 и React 19 (интерактивные «острова»), TypeScript в строгом режиме. Две страницы: главная `/` и список кейсов `/cases`. Тёмная тема в стиле основного сайта deep-agency.ru.
 
-## Requirements
+## Запуск
 
-Node.js 22.12 or newer and npm. Use `nvm use` if you manage Node with nvm.
-
-## Development
+Нужен Node.js 22.12 или новее.
 
 ```sh
 npm ci
-npm run dev
+npm run dev        # http://localhost:4321
+npm run build      # проверка типов (astro check) и статическая сборка в dist/
+npm run preview    # посмотреть собранный dist/
+npm run format:check
 ```
 
-The default development URL is http://localhost:4321. Astro reports a different port if that port is occupied.
+`dist/` — готовый сайт, его можно выложить на любой статический хостинг. Если домен известен, укажите `site` в `astro.config.mjs`.
 
-## Validation and production build
+## Форма «Обсудить проект»
+
+Все кнопки «Обсудить проект» открывают одно окно с формой (`ContactDialog`). Поля: имя, почта или телефон, сообщение. Под кнопкой стоит уведомление, что отправка заявки означает согласие на обработку персональных данных, со ссылкой на https://deep-agency.ru/policy/ (отдельного чекбокса нет; поле `consent` в заявке фиксирует это согласие). Если форму открыли из конструктора, квиза или кейса, сверху появляется плашка с выбранным контекстом; её можно убрать.
+
+Куда отправлять заявки, задаётся при сборке:
 
 ```sh
-npm run check
-npm run format:check
-npm run build
-npm run preview
+PUBLIC_FORM_ENDPOINT=https://example.com/lead npm run build
 ```
 
-The build checks types before emitting the static site into `dist/`. Deploy that directory to a static host. Set the production `site` URL in `astro.config.mjs` when the domain is known.
+Пока адрес пустой, форма работает в **демо-режиме**: проверяет поля, показывает «Спасибо» с пометкой «Тестовая версия» и никуда ничего не отправляет. Пример значения — в `.env.example`.
 
-## Structure
+На адрес уходит `POST` с `Content-Type: application/json`:
 
-- `src/pages/`: routes; `index.astro` is a temporary setup page.
-- `src/layouts/`: shared HTML shell and metadata.
-- `src/components/ui/`: shared visual primitives.
-- `src/components/sections/`: landing page sections.
-- `src/components/islands/`: interactive React components.
-- `src/assets/images/` and `src/assets/icons/`: imported design assets.
-- `src/styles/`: global baseline and future design tokens.
-- `src/data/`: typed page content and configuration.
-- `src/lib/`: shared logic.
-- `src/types/`: shared TypeScript types.
-- `public/fonts/`: self-hosted font files.
+```json
+{
+  "name": "Анна",
+  "contact": "+79001234567",
+  "contactKind": "phone",
+  "message": "Нужен онбординг для 500 человек",
+  "project": {
+    "label": "Из конструктора: Онбординг · 500 – 2 000 сотрудников",
+    "source": "configurator",
+    "details": { "Задача": "Онбординг" }
+  },
+  "page": "/#configurator",
+  "sentAt": "2026-10-27T10:00:00.000Z",
+  "consent": { "accepted": true, "policyUrl": "https://deep-agency.ru/policy/" }
+}
+```
 
-Add client hydration directives only to components that require browser interaction. Keep secrets out of source control; only intentionally public environment variables may use Astro's `PUBLIC_` prefix.
+`project` равен `null`, если форму открыли без контекста. `source` — откуда пришла заявка: `configurator`, `mechanics-quiz`, `audience-custom`, `audience-telegram`, `page` и т. п. Ответ с кодом 2xx считается успехом, всё остальное, таймаут (12 с) и обрыв связи показывают понятную ошибку, введённое остаётся в полях.
+
+Сайт статический, поэтому адрес виден в коде страницы: используйте webhook/прокси, который принимает заявки без секретов в запросе. Если приёмник на другом домене, он должен отвечать на CORS-запрос (`OPTIONS`) заголовками `Access-Control-Allow-Origin` и `Access-Control-Allow-Headers: Content-Type`. Скрытое поле-ловушка `website` отсекает простых ботов: заявка с заполненным полем не отправляется, а человеку показывается обычный успех.
+
+## Где что менять
+
+| Что                                                                                            | Файл                                                                  |
+| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Тексты лендинга: меню, первый экран, карточки слайдера, «Для кого», механики, шаги, кейсы, FAQ | `src/data/landing.ts`                                                 |
+| Подвал: юрлицо, адрес, ИНН/ОГРН, почта, Telegram, телефон, ссылки на политику и контакты       | `src/data/site.ts`                                                    |
+| Конструктор проекта: задачи, масштабы, модули, интеграции и тексты результата                  | `src/data/configurator.ts`                                            |
+| Мини-тест «Протестируйте механики» (3 вопроса)                                                 | `src/data/mechanics-quiz.ts`                                          |
+| Демо-данные аналитики по задачам                                                               | `src/data/analytics.ts`, `src/lib/demo-data.ts`                       |
+| Акцентные цвета (`data-accent`)                                                                | `src/styles/accent.css`                                               |
+| Стили брендов клиентов в кейсах (`data-brand`)                                                 | `src/styles/brands.css`                                               |
+| Анимации                                                                                       | `src/styles/motion.css`, `src/components/ui/Motion.tsx`               |
+| Слайдер первого экрана                                                                         | `src/components/sections/HeroCarousel.tsx`, `src/styles/showcase.css` |
+
+Пустые поля в `src/data/site.ts` (почта, Telegram, телефон, ИНН, ОГРН) в подвале не показываются. Пока они пусты, в подвале стоит ссылка на страницу контактов основного сайта.
+
+Слои стилей подключаются в `src/styles/main.css`, порядок важен: fonts → global → theme-deep → showcase → audience → clarity → brands → analytics → forms → footer → cases → typography → accent → motion.
+
+## Устройство
+
+- **Кейсы.** Шесть проектов в `cases` (`landing.ts`), у каждого поле `theme` с темой бренда. Ссылка `/#case-<id>` открывает нужный кейс на главной. Переключатель «Проект» показывается, только если в задаче больше одного проекта. Логотипов клиентов на сайте нет: только цвет, шрифт и форма.
+- **Анимации.** Появление блоков, счётчики и графики включает класс `html.motion-ok`; без JavaScript и при `prefers-reduced-motion: reduce` всё видно сразу и ничего не движется. Состояние хранится в `data-in`, а не в классах (React перезаписывает `className`). Не ставьте `data-reveal` на элементы, которые React добавляет позже: наблюдатель видит только то, что было на странице при загрузке.
+- **Слайдер.** Пять карточек, стрелки, точки с индикатором автопрокрутки и кнопка паузы; листается свайпом и клавиатурой, на паузе под курсором и вне экрана. Подробности и «грабли» с pointer-событиями — в комментариях `HeroCarousel.tsx`.
+- **Шрифты.** Читаемый текст — Inter, заголовки и подписи — Cascadia Mono; в панелях кейсов — открытые аналоги шрифтов брендов (Montserrat, Rubik). Файлы woff2 и лицензии лежат в `public/fonts/`.
+
+## Что проверялось
+
+Автотесты на Playwright (в репозиторий не входят) гоняли главную и `/cases` на ширинах от 320 до 1920 px: нет горизонтальной прокрутки, консоль и сеть чистые, форма (в демо-режиме и с реальным адресом, включая ошибки сервера и обрыв), квиз, конструктор (9 задач × 4 масштаба × наборы модулей), чипы первого экрана, слайдер, ссылки на кейсы, подвал, контраст нового текста не ниже 4,5:1, кольца фокуса.
+
+## Известные хвосты
+
+- `src/components/ui/ThreeDCarousel.tsx`, часть констант в `src/lib/figma-assets.ts` и старые правила светлой темы в `global.css` остались от прежних версий и не используются.
+- `prettier --check` ругается на несколько файлов, которые были неформатированы до правок (`CaseStudy.tsx`, `Configurator.tsx`, `Mechanics.tsx`, `landing.ts`, `cases.astro`, `global.css`): не переформатировали, чтобы не раздувать diff.
+- Страница `/coverflow-preview` показывает слайдер отдельно, в меню её нет.

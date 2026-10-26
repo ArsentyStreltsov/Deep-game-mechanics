@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
-import { caseCategories, cases, type CaseCategoryId } from '@/data/landing';
+import {
+  caseBrand,
+  caseCategories,
+  cases,
+  type CaseCategoryId,
+} from '@/data/landing';
 import { IconTile } from '@/components/ui/IconTile';
 import { ArrowButton } from '@/components/ui/ArrowButton';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
@@ -26,7 +31,7 @@ export default function CaseStudy() {
     setActiveCaseId('');
   }
 
-  // Карточки блока «Для кого» и баннер Telegram открывают нужную задачу (и проект) в этом разделе.
+  // Карточки блока «Для кого» и кнопки «Для задач» в первом экране открывают нужную задачу в этом разделе.
   useEffect(() => {
     function onClick(event: MouseEvent) {
       const trigger = (event.target as Element | null)?.closest?.(
@@ -40,6 +45,21 @@ export default function CaseStudy() {
     }
     document.addEventListener('click', onClick);
     return () => document.removeEventListener('click', onClick);
+  }, []);
+
+  // Ссылка вида /#case-<id> (со страницы «Все кейсы», из закладки или письма) открывает нужный проект.
+  // К самому разделу страница прокручивается без скриптов: якоря `case-<id>` лежат над вкладками.
+  useEffect(() => {
+    function openFromHash() {
+      const match = /^#case-([\w-]+)$/.exec(window.location.hash);
+      const item = match ? cases.find((entry) => entry.id === match[1]) : undefined;
+      if (!item) return;
+      setActiveCategory(item.categoryId);
+      setActiveCaseId(item.id);
+    }
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+    return () => window.removeEventListener('hashchange', openFromHash);
   }, []);
 
   function onTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
@@ -86,6 +106,11 @@ export default function CaseStudy() {
             </span>
           </a>
         </div>
+        <span className="case-anchors" aria-hidden="true">
+          {cases.map((item) => (
+            <span id={`case-${item.id}`} key={item.id} />
+          ))}
+        </span>
         <div className="case-study__filter" data-reveal>
           <span id="case-filter-label">Задача</span>
           <div
@@ -118,17 +143,17 @@ export default function CaseStudy() {
             })}
           </div>
         </div>
-        <div className="case-study__examples" data-reveal>
-          <span id="case-examples-label">
-            {categoryCases.length > 1 ? 'Проекты' : 'Проект'}
-          </span>
-          <div
-            className="case-switch"
-            role="group"
-            aria-labelledby="case-examples-label"
-          >
-            {categoryCases.map((item) =>
-              categoryCases.length > 1 ? (
+        {categoryCases.length > 1 ? (
+          // без data-reveal: блок появляется и пропадает при смене задачи, а наблюдатель прокрутки
+          // видит только то, что было на странице при загрузке
+          <div className="case-study__examples">
+            <span id="case-examples-label">Проекты</span>
+            <div
+              className="case-switch"
+              role="group"
+              aria-labelledby="case-examples-label"
+            >
+              {categoryCases.map((item) => (
                 <button
                   className={`case-switch__item${item.id === current.id ? ' is-active' : ''}`}
                   key={item.id}
@@ -140,19 +165,10 @@ export default function CaseStudy() {
                   <b>{item.brand}</b>
                   {item.title}
                 </button>
-              ) : (
-                <span
-                  className="case-switch__item is-active"
-                  key={item.id}
-                  data-brand={item.theme}
-                >
-                  <b>{item.brand}</b>
-                  {item.title}
-                </span>
-              ),
-            )}
+              ))}
+            </div>
           </div>
-        </div>
+        ) : null}
         <div
           className="case-study__body"
           id="case-panel"
@@ -191,22 +207,20 @@ export default function CaseStudy() {
             </div>
           </div>
           <article
-            className={`case-visual case-visual--${current.artwork}${current.cover ? ' case-visual--cover' : ''}${current.theme === 'deep' ? '' : ' case-visual--brand'}`}
+            className={`case-visual case-visual--${current.artwork} case-visual--cover case-visual--brand`}
             data-brand={current.theme}
-            aria-label={`Пример: ${current.brand} — ${current.title}`}
+            aria-label={`Пример: ${caseBrand(current)} — ${current.title}`}
           >
             <div className="case-visual__art" aria-hidden="true">
-              {current.cover ? (
-                <img
-                  className="case-visual__image"
-                  key={current.id}
-                  src={current.cover}
-                  alt=""
-                  width={1536}
-                  height={1024}
-                  decoding="async"
-                />
-              ) : null}
+              <img
+                className="case-visual__image"
+                key={current.id}
+                src={current.cover}
+                alt=""
+                width={1536}
+                height={1024}
+                decoding="async"
+              />
               <span className="case-visual__shade" />
             </div>
             <div className="case-visual__meta" key={category.id}>
@@ -214,7 +228,17 @@ export default function CaseStudy() {
             </div>
             <div className="case-visual__copy" key={current.id}>
               <header className="case-visual__head">
-                <h3>{current.brand}</h3>
+                <h3>
+                  {current.brand}
+                  {current.brandNote ? (
+                    <>
+                      {' '}
+                      <small className="case-visual__brand-note">
+                        ({current.brandNote})
+                      </small>
+                    </>
+                  ) : null}
+                </h3>
                 <h4>{current.title}</h4>
                 <p>{current.description}</p>
               </header>
@@ -246,7 +270,13 @@ export default function CaseStudy() {
               </div>
             </div>
             <div className="case-visual__cta">
-              <ArrowButton href="#configurator" openContact>
+              <ArrowButton
+                href="#configurator"
+                openContact
+                context={`${caseBrand(current)} — ${current.title}`}
+                kicker="Похожий проект"
+                source={`case-${current.id}`}
+              >
                 Обсудить такой проект
               </ArrowButton>
             </div>

@@ -1,0 +1,682 @@
+/* ───────────── Диалоги и форма заявки ─────────────
+   Одно окно «Расскажите о задаче» на всю страницу (ContactDialog) и мини-тест механик (MechanicsDemo)
+   используют общую подложку и панель (Dialog). Здесь же — подсказки конфигуратора, которые появились
+   вместе с новой логикой выбора. Подключается после темы и кейсов, перед акцентами и движением. */
+
+/* ───────────── Подложка и панель ───────────── */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: rgba(5, 6, 10, 0.74);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.dialog-panel {
+  position: relative;
+  width: min(100%, 480px);
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 26px 28px 22px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 12px;
+  background: #141517;
+  color: var(--deep-text);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.6);
+}
+.dialog-panel:focus {
+  outline: none;
+}
+html.motion-ok .dialog-backdrop {
+  animation: fade-in 0.2s ease both;
+}
+html.motion-ok .dialog-panel {
+  animation: rise-sm 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.dialog-close,
+.contact-dialog__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--deep-muted);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+.dialog-close:hover,
+.contact-dialog__close:hover {
+  background: var(--deep-surface-2);
+  color: var(--deep-text);
+}
+.dialog-close:focus-visible,
+.contact-dialog__close:focus-visible,
+.contact-context__remove:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 2px;
+}
+.contact-dialog__close[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.dialog-title,
+.contact-dialog__title,
+.contact-done h3 {
+  margin: 0;
+  padding-right: 40px;
+  color: var(--deep-text);
+  font: 400 24px/1.2 var(--font-mono);
+  letter-spacing: -0.04em;
+}
+
+/* ───────────── Плашка «Из конструктора» ───────────── */
+.contact-context {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 8px;
+  margin-top: 14px;
+  padding: 8px 8px 8px 12px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 8px;
+  background: rgba(108, 149, 255, 0.07);
+}
+.contact-context__kicker {
+  grid-column: 1;
+  color: var(--deep-link);
+  font: 600 11px/1.2 var(--font-text, var(--font-mono));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.contact-context__text {
+  grid-column: 1;
+  min-width: 0;
+  color: var(--deep-text);
+  font: 400 14px/1.35 var(--font-text, var(--font-mono));
+  overflow-wrap: anywhere;
+}
+.contact-context__remove {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--deep-muted);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+.contact-context__remove:hover {
+  background: var(--deep-surface-2);
+  color: var(--deep-text);
+}
+
+/* ───────────── Поля ───────────── */
+.contact-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+.contact-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.contact-field label {
+  color: var(--deep-text-soft);
+  font: 500 13px/1.3 var(--font-text, var(--font-mono));
+}
+.contact-field label em {
+  color: var(--deep-link);
+  font-style: normal;
+}
+.contact-field label small {
+  color: var(--deep-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.contact-field input,
+.contact-field textarea {
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
+  padding: 11px 14px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 10px;
+  background: var(--deep-canvas);
+  color: var(--deep-text);
+  font: 400 15px/1.4 var(--font-text, var(--font-mono));
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.contact-field textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.contact-field input::placeholder,
+.contact-field textarea::placeholder {
+  color: #858a96;
+  opacity: 1;
+}
+.contact-field input:hover,
+.contact-field textarea:hover {
+  border-color: #3d3f45;
+}
+.contact-field input:focus,
+.contact-field textarea:focus {
+  border-color: var(--deep-link);
+  box-shadow: 0 0 0 3px rgba(108, 149, 255, 0.28);
+}
+.contact-field input[aria-invalid='true'],
+.contact-field textarea[aria-invalid='true'] {
+  border-color: #ff7a7a;
+  box-shadow: 0 0 0 3px rgba(255, 122, 122, 0.16);
+}
+.contact-field input[readonly],
+.contact-field textarea[readonly] {
+  opacity: 0.7;
+}
+.contact-field__error,
+.contact-form__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  color: #ff9b9b;
+  font: 400 13px/1.35 var(--font-text, var(--font-mono));
+}
+.contact-field__error svg,
+.contact-form__alert svg {
+  flex: none;
+  margin-top: 2px;
+}
+.contact-form__alert {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 122, 122, 0.36);
+  border-radius: 8px;
+  background: rgba(255, 122, 122, 0.08);
+}
+/* ловушка для ботов: людям не видна и не доступна с клавиатуры */
+.contact-form__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ───────────── Кнопки ───────────── */
+.contact-dialog__submit,
+.contact-dialog__secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  margin: 2px 0 0;
+  padding: 12px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--deep-radius-btn);
+  font: 350 17px/1.25 var(--font-mono);
+  letter-spacing: 0;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+.contact-dialog__submit {
+  background: var(--deep-primary);
+  color: #fff;
+}
+.contact-dialog__submit:hover {
+  background: var(--deep-primary-hover);
+}
+.contact-dialog__submit:active {
+  background: var(--deep-primary-press);
+}
+.contact-dialog__submit[aria-disabled='true'] {
+  background: var(--deep-primary-press);
+  cursor: progress;
+}
+.contact-dialog__secondary {
+  border-color: var(--deep-border-2);
+  background: transparent;
+  color: var(--deep-text);
+}
+.contact-dialog__secondary:hover {
+  background: var(--deep-surface-2);
+}
+.contact-dialog__submit:focus-visible,
+.contact-dialog__secondary:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 3px;
+}
+.contact-dialog__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: contact-spin 0.8s linear infinite;
+}
+@keyframes contact-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-dialog__spinner {
+    animation: none;
+  }
+}
+
+.contact-form__legal {
+  margin: 0;
+  color: var(--deep-muted);
+  font: 400 12px/1.5 var(--font-text, var(--font-mono));
+}
+.contact-form__legal a {
+  color: var(--deep-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.contact-form__legal a:hover {
+  color: #9db8ff;
+}
+
+/* ───────────── Экран «Заявка отправлена» ───────────── */
+.contact-done {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  outline: none;
+}
+.contact-done__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(110, 231, 160, 0.38);
+  border-radius: 50%;
+  background: rgba(110, 231, 160, 0.12);
+  color: #6ee7a0;
+}
+.contact-done h3 {
+  padding-right: 0;
+}
+.contact-done p {
+  margin: 0;
+  color: var(--deep-text-soft);
+  font: 400 15px/1.5 var(--font-text, var(--font-mono));
+}
+.contact-done p b {
+  color: var(--deep-text);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.contact-done p.contact-done__demo {
+  padding: 8px 12px;
+  border: 1px dashed var(--deep-border-2);
+  border-radius: 8px;
+  color: var(--deep-muted);
+  font-size: 13px;
+}
+.contact-done .contact-dialog__secondary {
+  margin-top: 8px;
+}
+
+/* ───────────── Телефон: окно выезжает снизу ───────────── */
+@media (max-width: 600px) {
+  .dialog-backdrop {
+    align-items: end;
+    padding: 12px 0 0;
+  }
+  .dialog-panel {
+    width: 100%;
+    max-height: calc(100dvh - 12px);
+    padding: 22px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 16px 16px 0 0;
+  }
+  .dialog-title,
+  .contact-dialog__title,
+  .contact-done h3 {
+    font-size: 22px;
+  }
+  /* 16px в полях — иначе iOS при фокусе приближает страницу */
+  .contact-field input,
+  .contact-field textarea {
+    font-size: 16px;
+  }
+}
+
+/* ───────────── Конфигуратор: подсказки к выбору ───────────── */
+.builder-question__hint {
+  margin: -4px 0 10px;
+  color: var(--deep-muted);
+  font: 400 13px/1.4 var(--font-text, var(--font-mono));
+}
+.builder-question__empty {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  border: 1px dashed var(--deep-border-2);
+  border-radius: 8px;
+  color: var(--deep-text-soft);
+  font: 400 13px/1.45 var(--font-text, var(--font-mono));
+}
+.summary-tags {
+  flex-wrap: wrap;
+}
+.summary-tags span.summary-tags__empty {
+  border-style: dashed;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* Карточка «Детали проекта» растёт по тексту: кнопка внизу, но не поверх описания */
+.project-summary {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.project-summary__cta {
+  position: static;
+  margin-top: auto;
+  padding-top: 26px;
+}
+
+/* ───────────── «Протестируйте механики»: кнопка в заголовке и окно теста ───────────── */
+.mechanics__try {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  flex: 0 0 auto;
+  margin: 0 8px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--deep-muted);
+  cursor: pointer;
+}
+.mechanics__try .mechanics__decoration {
+  margin: -6px 0 0;
+  transition:
+    scale 220ms ease,
+    filter 220ms ease;
+}
+.mechanics__try-note {
+  padding-right: 6px;
+  font: 350 12px/1.3 var(--font-mono);
+  text-align: right;
+  transition: color 160ms ease;
+}
+.mechanics__try:hover .mechanics__decoration {
+  scale: 1.04;
+  filter: brightness(1.12) saturate(1.1);
+}
+.mechanics__try:hover .mechanics__try-note {
+  color: var(--deep-text);
+}
+.mechanics__try:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 4px;
+}
+
+.quiz-dialog {
+  width: min(100%, 520px);
+}
+.quiz-dialog__kicker {
+  margin: 0 40px 10px 0;
+  color: var(--deep-link);
+  font: 600 11px/1.3 var(--font-text, var(--font-mono));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.quiz-dialog__progress {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 6px;
+  margin: 0 0 16px;
+}
+.quiz-dialog__progress span {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--deep-border-2);
+  transition: background-color 240ms ease;
+}
+.quiz-dialog__progress span.is-filled {
+  background: var(--deep-link);
+}
+.quiz-dialog__fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.quiz-dialog__legend {
+  display: block;
+  width: 100%;
+  margin: 0 0 14px;
+  padding: 0;
+}
+.quiz-dialog__options {
+  display: grid;
+  gap: 8px;
+}
+html.motion-ok .quiz-dialog__options {
+  animation: rise-sm 0.3s ease both;
+}
+.quiz-option {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+.quiz-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.quiz-option span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 10px;
+  background: var(--deep-canvas);
+  color: var(--deep-text-soft);
+  font: 400 15px/1.35 var(--font-text, var(--font-mono));
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.quiz-option span::before {
+  content: '';
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #4a4c53;
+  border-radius: 50%;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+.quiz-option:hover span {
+  border-color: #3d3f45;
+  background: var(--deep-surface-2);
+}
+.quiz-option input:checked + span {
+  border-color: var(--deep-link);
+  background: rgba(108, 149, 255, 0.1);
+  color: #fff;
+}
+.quiz-option input:checked + span::before {
+  border-color: var(--deep-link);
+  background: radial-gradient(circle, var(--deep-link) 0 42%, transparent 48%);
+}
+.quiz-option input:focus-visible + span {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 2px;
+}
+.quiz-dialog__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+.quiz-dialog__back {
+  min-height: 44px;
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--deep-muted);
+  font: 350 15px/1.25 var(--font-mono);
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+.quiz-dialog__back:hover {
+  color: var(--deep-text);
+}
+.quiz-dialog__back:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.contact-dialog__submit.quiz-dialog__next {
+  width: auto;
+  min-width: 190px;
+  margin: 0;
+}
+.quiz-dialog__next:disabled {
+  background: var(--deep-primary);
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.quiz-dialog__arrow.arrow-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.quiz-result {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.quiz-result button {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 10px;
+  background: var(--deep-canvas);
+  color: var(--deep-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+.quiz-result button:hover {
+  border-color: var(--accent, var(--deep-link));
+  background: var(--deep-surface-2);
+}
+.quiz-result button:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 2px;
+}
+.quiz-result .mechanic-art {
+  width: 56px;
+  height: 56px;
+}
+.quiz-result__copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.quiz-result__copy strong {
+  font: 400 16px/1.25 var(--font-mono);
+}
+.quiz-result__copy span {
+  color: var(--deep-muted);
+  font: 400 13px/1.45 var(--font-text, var(--font-mono));
+}
+.quiz-result__copy em {
+  color: var(--accent, var(--deep-link));
+  font: normal 350 12px/1.3 var(--font-mono);
+}
+.quiz-dialog__note {
+  margin: 14px 0 0;
+  color: var(--deep-muted);
+  font: 400 13px/1.5 var(--font-text, var(--font-mono));
+}
+
+@media (max-width: 600px) {
+  .mechanics__try-note {
+    font-size: 11px;
+  }
+  .quiz-dialog__actions {
+    flex-wrap: wrap;
+  }
+  .contact-dialog__submit.quiz-dialog__next {
+    flex: 1 1 190px;
+  }
+  .quiz-dialog__actions--result {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .contact-dialog__submit.quiz-dialog__next.quiz-dialog__next {
+    flex: none;
+  }
+  .quiz-dialog__actions--result .quiz-dialog__next {
+    width: 100%;
+  }
+  .quiz-dialog__actions--result .quiz-dialog__back {
+    text-align: center;
+  }
+}

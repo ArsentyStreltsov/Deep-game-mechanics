@@ -25,14 +25,13 @@ export default function FAQ() {
           Коротко о том, как устроена работа с платформой
         </p>
       </header>
-      <div className="faq__list">
+      <div className="faq__list" data-reveal>
         {faqItems.map((item, index) => {
           const isOpen = openIndex === index;
           return (
             <div
               className={`faq-item${isOpen ? ' is-open' : ''}`}
               key={item.question}
-              data-reveal
             >
               <button
                 type="button"

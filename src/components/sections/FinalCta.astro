@@ -1,6 +1,13 @@
 ---
 import { finalCta } from '@/data/landing';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
+
+interface Props {
+  /** Куда ведёт «Собрать пример проекта»: на главной — якорь, на других страницах — `/#configurator`. */
+  configuratorHref?: string;
+}
+
+const { configuratorHref = '#configurator' } = Astro.props;
 ---
 
 <section
@@ -23,13 +30,13 @@ import { ArrowIcon } from '@/components/ui/ArrowIcon';
     </h2>
     <p>{finalCta.text}</p>
     <div class="final-cta__actions">
-      <a class="arrow-button" href="#configurator" data-open-contact>
+      <a class="arrow-button" href={configuratorHref} data-open-contact>
         <span>{finalCta.primary}</span>
         <span aria-hidden="true" class="arrow-button__icon">
           <ArrowIcon className="arrow-button__arrow" />
         </span>
       </a>
-      <a class="final-cta__ghost" href="#configurator">
+      <a class="final-cta__ghost" href={configuratorHref}>
         {finalCta.secondary}
       </a>
     </div>

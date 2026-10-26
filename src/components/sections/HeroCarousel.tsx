@@ -7,14 +7,18 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from 'react';
 import { heroCards, type HeroCard } from '@/data/landing';
+import { ArrowIcon } from '@/components/ui/ArrowIcon';
 
 /**
  * Слайдер первого экрана (coverflow). У каждой карточки — свой мини-интерфейс,
- * который показывает, что именно получает клиент: скорость, игры, кастом, баллы,
- * командный зачёт, Telegram/QR, аналитику. Вёрстка и 3D-позиции — в styles/showcase.css.
+ * который показывает, что именно получает клиент: игру в фирменном оформлении, баллы и награды,
+ * Telegram/QR, аналитику, механику на заказ. Вёрстка и 3D-позиции — в styles/showcase.css.
  *
- * Слотов семь: пять видимых (-2…2) и по одному скрытому с каждой стороны,
- * поэтому карточка, уходящая «за кадр», перепрыгивает на другую сторону незаметно.
+ * Карточек пять: три видны (-1…1), по одной ждёт «за кадром» с каждой стороны (±2),
+ * поэтому уходящая карточка перепрыгивает на другую сторону незаметно.
+ * Автопрокрутку ведёт CSS-анимация заполнения активной точки: когда она закончилась — следующий слайд.
+ * Так индикатор всегда совпадает с таймером, а пауза (наведение, фокус с клавиатуры, перетаскивание,
+ * кнопка) — это просто `animation-play-state`.
  */
 
 /** Размеры сцены в натуральных пикселях; на широком экране она масштабируется целиком. */
@@ -25,7 +29,8 @@ const TOTAL = heroCards.length;
 const HALF = Math.floor(TOTAL / 2);
 const INITIAL_ACTIVE = 0;
 const SWIPE_THRESHOLD = 56;
-const AUTOPLAY_MS = 5200;
+/** Карточки дальше этого расстояния от центра не видны (ждут «за кадром»). */
+const VISIBLE_RADIUS = 1;
 
 function wrapOffset(index: number, active: number) {
   return ((index - active + TOTAL + HALF) % TOTAL) - HALF;
@@ -33,20 +38,7 @@ function wrapOffset(index: number, active: number) {
 
 /* ───────────── Значки ───────────── */
 
-type GlyphName =
-  | 'check'
-  | 'plus'
-  | 'flag'
-  | 'modules'
-  | 'gift'
-  | 'trophy'
-  | 'quiz'
-  | 'wheel'
-  | 'memory'
-  | 'clicker'
-  | 'catch'
-  | 'bingo'
-  | 'plane';
+type GlyphName = 'check' | 'plus' | 'gift' | 'quiz' | 'plane';
 
 function Glyph({ name }: { name: GlyphName }) {
   const props = {
@@ -80,26 +72,6 @@ function Glyph({ name }: { name: GlyphName }) {
           />
         </svg>
       );
-    case 'flag':
-      return (
-        <svg {...props}>
-          <path
-            fill="currentColor"
-            d="M5 3h2.2v18H5zM8.4 4.2h11.2l-2.7 4.4 2.7 4.4H8.4z"
-          />
-        </svg>
-      );
-    case 'modules':
-      return (
-        <svg {...props}>
-          <g fill="currentColor">
-            <rect x="3" y="3" width="8" height="8" rx="2.2" />
-            <rect x="13" y="3" width="8" height="8" rx="2.2" />
-            <rect x="3" y="13" width="8" height="8" rx="2.2" />
-            <rect x="13" y="13" width="8" height="8" rx="2.2" opacity=".4" />
-          </g>
-        </svg>
-      );
     case 'gift':
       return (
         <svg {...props}>
@@ -109,23 +81,6 @@ function Glyph({ name }: { name: GlyphName }) {
             <path d="M12 9C9.4 9 7 8 7 6.3 7 5 8 4 9.3 4 11 4 12 6 12 9Zm0 0c2.6 0 5-1 5-2.7C17 5 16 4 14.7 4 13 4 12 6 12 9Z" />
           </g>
           <rect x="11" y="9" width="2" height="12" fill="var(--ui-cut)" />
-        </svg>
-      );
-    case 'trophy':
-      return (
-        <svg {...props}>
-          <g fill="currentColor">
-            <path d="M7 3h10v6.2a5 5 0 0 1-10 0z" />
-            <rect x="11" y="13.5" width="2" height="4" />
-            <rect x="7.5" y="17" width="9" height="3.4" rx="1.4" />
-          </g>
-          <path
-            d="M7 5H3.8v1.4A3.6 3.6 0 0 0 7.4 10M17 5h3.2v1.4a3.6 3.6 0 0 1-3.6 3.6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
         </svg>
       );
     case 'quiz':
@@ -143,94 +98,6 @@ function Glyph({ name }: { name: GlyphName }) {
             strokeLinecap="round"
           />
           <circle cx="12" cy="15.9" r="1.2" fill="var(--ui-cut)" />
-        </svg>
-      );
-    case 'wheel':
-      return (
-        <svg {...props}>
-          <circle cx="12" cy="13" r="8" fill="currentColor" />
-          <path
-            d="M12 5v16M5.1 9l13.8 8M18.9 9 5.1 17"
-            stroke="var(--ui-cut)"
-            strokeWidth="1.6"
-          />
-          <circle cx="12" cy="13" r="2" fill="var(--ui-cut)" />
-          <path fill="currentColor" d="M12 1.6l2.5 3.6h-5z" />
-        </svg>
-      );
-    case 'memory':
-      return (
-        <svg {...props}>
-          <rect
-            x="3"
-            y="6"
-            width="11"
-            height="14"
-            rx="2.6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <rect
-            x="10"
-            y="4"
-            width="11"
-            height="14"
-            rx="2.6"
-            fill="currentColor"
-          />
-          <path
-            fill="var(--ui-cut)"
-            d="m15.5 7.6 1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z"
-          />
-        </svg>
-      );
-    case 'clicker':
-      return (
-        <svg {...props}>
-          <path
-            fill="currentColor"
-            d="M7 3.5 19 13l-5.2 1 3 6.2-2.6 1.2-3-6.2L7 18.6z"
-          />
-          <path
-            d="M3.5 8.5a6 6 0 0 1 2.6-4.4M3 13.6a9 9 0 0 1-.2-3.6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-    case 'catch':
-      return (
-        <svg {...props}>
-          <path
-            fill="currentColor"
-            d="M3.5 11h17l-1.9 8.2a2.2 2.2 0 0 1-2.1 1.7H7.5a2.2 2.2 0 0 1-2.1-1.7z"
-          />
-          <circle cx="8.5" cy="5.2" r="2" fill="currentColor" />
-          <circle cx="15" cy="3.8" r="1.7" fill="currentColor" />
-          <circle cx="13" cy="8.4" r="1.4" fill="currentColor" />
-        </svg>
-      );
-    case 'bingo':
-      return (
-        <svg {...props}>
-          <g fill="currentColor">
-            {[0, 1, 2].flatMap((row) =>
-              [0, 1, 2].map((col) => (
-                <rect
-                  key={`${row}-${col}`}
-                  x={3 + col * 6.7}
-                  y={3 + row * 6.7}
-                  width="5.3"
-                  height="5.3"
-                  rx="1.5"
-                  opacity={(row + col) % 2 === 0 ? 1 : 0.38}
-                />
-              )),
-            )}
-          </g>
         </svg>
       );
     case 'plane':
@@ -292,65 +159,51 @@ function QrCode() {
 
 /* ───────────── Мини-интерфейсы карточек ───────────── */
 
-function SpeedUi() {
-  return (
-    <>
-      <ol className="ui-steps">
-        <li className="is-done">
-          <span className="ui-steps__dot">
-            <Glyph name="check" />
-          </span>
-          <b>Бриф</b>
-        </li>
-        <li className="is-now">
-          <span className="ui-steps__dot">
-            <i />
-          </span>
-          <b>Сборка</b>
-        </li>
-        <li>
-          <span className="ui-steps__dot">
-            <Glyph name="flag" />
-          </span>
-          <b>Запуск</b>
-        </li>
-      </ol>
-      <ul className="ui-checks">
-        <li>
-          <span className="ui-checks__mark">
-            <Glyph name="check" />
-          </span>
-          Готовые модули
-          <em>основа</em>
-        </li>
-        <li className="ui-checks__idea">
-          <span className="ui-checks__mark">
-            <Glyph name="plus" />
-          </span>
-          Кастом под задачу
-          <em>что угодно</em>
-        </li>
-      </ul>
-    </>
-  );
-}
+/**
+ * Игры: одна и та же игра в оформлении трёх брендов. Меняются цвета и форма элементов (оформление),
+ * условие на старте (правила) и приз (награды) — ровно то, что мы подстраиваем под клиента.
+ * Названий игр здесь нет: полный список — в разделе «Механики и возможности».
+ */
+const SKINS = [
+  { skin: 'blue', rule: '30 с', prize: '+50', widths: [64, 78, 52] },
+  { skin: 'warm', rule: '1/5', prize: 'Мерч', widths: [72, 48, 66] },
+  { skin: 'mint', rule: '2/3', prize: '−15%', widths: [56, 70, 60] },
+] as const;
 
-const GAMES: readonly (readonly [GlyphName, string])[] = [
-  ['quiz', 'Квиз'],
-  ['wheel', 'Колесо'],
-  ['memory', 'Memory'],
-  ['clicker', 'Кликер'],
-  ['catch', 'Ловля'],
-  ['bingo', 'Bingo'],
-];
+/** Какой из трёх ответов в мини-экране выбран (номер с нуля). */
+const PICKED_ANSWER = 1;
 
 function GamesUi() {
   return (
-    <div className="ui-games">
-      {GAMES.map(([glyph, label]) => (
-        <span className="ui-tile" key={label}>
-          <Glyph name={glyph} />
-          <b>{label}</b>
+    <div className="ui-skins">
+      {SKINS.map(({ skin, rule, prize, widths }) => (
+        <span className="ui-skin" data-skin={skin} key={skin}>
+          <span className="ui-skin__head">
+            <i className="ui-skin__logo" />
+            <span className="ui-skin__rule">{rule}</span>
+          </span>
+          <span className="ui-skin__question">
+            <Glyph name="quiz" />
+            <span className="ui-skin__lines">
+              <i />
+              <i />
+            </span>
+          </span>
+          <span className="ui-skin__answers">
+            {widths.map((width, index) => (
+              <span
+                className={`ui-skin__answer${index === PICKED_ANSWER ? ' is-picked' : ''}`}
+                key={index}
+              >
+                <i style={{ width: `${width}%` }} />
+                {index === PICKED_ANSWER ? <Glyph name="check" /> : null}
+              </span>
+            ))}
+          </span>
+          <span className="ui-skin__prize">
+            <Glyph name="gift" />
+            {prize}
+          </span>
         </span>
       ))}
     </div>
@@ -422,35 +275,6 @@ function RewardsUi() {
   );
 }
 
-const TEAMS = [
-  { city: 'Москва', points: '2 480', share: 100 },
-  { city: 'Санкт-Петербург', points: '2 215', share: 89 },
-  { city: 'Казань', points: '1 960', share: 79 },
-] as const;
-
-function TeamsUi() {
-  return (
-    <>
-      <div className="ui-teams__head">
-        <Glyph name="trophy" />
-        <b>Общий зачёт</b>
-        <small>города</small>
-      </div>
-      {TEAMS.map((team) => (
-        <div className="ui-team" key={team.city}>
-          <div>
-            <b>{team.city}</b>
-            <em>{team.points}</em>
-          </div>
-          <span className="ui-team__bar">
-            <i style={{ width: `${team.share}%` }} />
-          </span>
-        </div>
-      ))}
-    </>
-  );
-}
-
 function OnlineUi() {
   return (
     <div className="ui-online">
@@ -513,16 +337,12 @@ function AnalyticsUi() {
 
 function CardUi({ id }: { id: HeroCard['id'] }) {
   switch (id) {
-    case 'speed':
-      return <SpeedUi />;
     case 'games':
       return <GamesUi />;
     case 'custom':
       return <CustomUi />;
     case 'rewards':
       return <RewardsUi />;
-    case 'teams':
-      return <TeamsUi />;
     case 'online':
       return <OnlineUi />;
     case 'analytics':
@@ -543,7 +363,7 @@ function ShowcaseCard({
   offset: number;
   onSelect: () => void;
 }) {
-  const hidden = Math.abs(offset) > 2;
+  const hidden = Math.abs(offset) > VISIBLE_RADIUS;
   return (
     <article
       className="showcase__card"
@@ -575,15 +395,39 @@ function ShowcaseCard({
   );
 }
 
+function PauseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <rect x="6" y="5" width="4" height="14" rx="1.2" fill="currentColor" />
+      <rect x="14" y="5" width="4" height="14" rx="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+
+function PlayIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <path
+        d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export function HeroCarousel() {
   const stageRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(INITIAL_ACTIVE);
-  const [paused, setPaused] = useState(false);
+  /** Кнопка «Пауза»: человек сам остановил автопрокрутку. */
+  const [playing, setPlaying] = useState(true);
+  /** Временная пауза: мышь над слайдером, фокус с клавиатуры внутри, перетаскивание. */
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [inView, setInView] = useState(true);
-  const resumeTimerRef = useRef<number | null>(null);
-  /** Мышь над слайдером: пока она там, автопрокрутка не возобновляется (клик по карточке — чтобы её прочитать). */
-  const hoverRef = useRef(false);
+  /** Индикатор автопрокрутки включаем после гидратации: раньше обработчик конца анимации не подключён. */
+  const [mounted, setMounted] = useState(false);
   const dragRef = useRef<{
     pointerId: number | null;
     startX: number;
@@ -597,25 +441,7 @@ export function HeroCarousel() {
     dragging: false,
     moved: false,
   });
-
-  const pauseAutoplay = useCallback(() => {
-    setPaused(true);
-    if (resumeTimerRef.current !== null) {
-      window.clearTimeout(resumeTimerRef.current);
-      resumeTimerRef.current = null;
-    }
-  }, []);
-
-  const resumeAutoplaySoon = useCallback(() => {
-    if (resumeTimerRef.current !== null) {
-      window.clearTimeout(resumeTimerRef.current);
-    }
-    resumeTimerRef.current = window.setTimeout(() => {
-      resumeTimerRef.current = null;
-      if (hoverRef.current) return;
-      setPaused(false);
-    }, AUTOPLAY_MS);
-  }, []);
+  const running = !hovered && !focused && !dragging && inView;
 
   /** Широкий экран: сцена целиком масштабируется под ширину. Узкий: карточки в натуральную величину, без масштаба. */
   const fit = useCallback(() => {
@@ -641,6 +467,7 @@ export function HeroCarousel() {
   }, []);
 
   useEffect(() => {
+    setMounted(true);
     fit();
     const stage = stageRef.current;
     if (!stage) return undefined;
@@ -665,35 +492,6 @@ export function HeroCarousel() {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (paused || !inView) return undefined;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return undefined;
-    }
-    const timer = window.setInterval(() => {
-      if (dragRef.current.dragging) return;
-      move(1);
-    }, AUTOPLAY_MS);
-    return () => window.clearInterval(timer);
-  }, [paused, inView, move]);
-
-  useEffect(() => {
-    return () => {
-      if (resumeTimerRef.current !== null) {
-        window.clearTimeout(resumeTimerRef.current);
-      }
-    };
-  }, []);
-
-  const select = useCallback(
-    (index: number) => {
-      goTo(index);
-      pauseAutoplay();
-      resumeAutoplaySoon();
-    },
-    [goTo, pauseAutoplay, resumeAutoplaySoon],
-  );
-
   const onPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
@@ -703,11 +501,11 @@ export function HeroCarousel() {
       drag.lastX = event.clientX;
       drag.dragging = true;
       drag.moved = false;
-      pauseAutoplay();
+      setDragging(true);
       // Захват указателя включаем не сразу, а когда пользователь реально потащил (см. onPointerMove):
       // при захвате браузер отправляет click на сам слайдер, и клик по соседней карточке до неё не доходит.
     },
-    [pauseAutoplay],
+    [],
   );
 
   const onPointerMove = useCallback(
@@ -730,6 +528,7 @@ export function HeroCarousel() {
       if (!drag.dragging || drag.pointerId !== event.pointerId) return;
       drag.dragging = false;
       drag.pointerId = null;
+      setDragging(false);
       if (event.currentTarget.hasPointerCapture(event.pointerId)) {
         event.currentTarget.releasePointerCapture(event.pointerId);
       }
@@ -740,9 +539,8 @@ export function HeroCarousel() {
         const steps = Math.max(1, Math.round(Math.abs(deltaX) / 160));
         move(deltaX < 0 ? steps : -steps);
       }
-      resumeAutoplaySoon();
     },
-    [move, resumeAutoplaySoon],
+    [move],
   );
 
   const onPointerCancel = useCallback(
@@ -751,23 +549,23 @@ export function HeroCarousel() {
       if (drag.pointerId !== event.pointerId) return;
       drag.dragging = false;
       drag.pointerId = null;
+      setDragging(false);
       event.currentTarget.classList.remove('is-dragging');
-      resumeAutoplaySoon();
     },
-    [resumeAutoplaySoon],
+    [],
   );
 
   const onKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        select(active + 1);
+        goTo(active + 1);
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        select(active - 1);
+        goTo(active - 1);
       }
     },
-    [active, select],
+    [active, goTo],
   );
 
   return (
@@ -776,7 +574,31 @@ export function HeroCarousel() {
       role="region"
       aria-roledescription="carousel"
       aria-label="Возможности платформы"
+      data-playing={playing ? 'true' : 'false'}
       onKeyDown={onKeyDown}
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse') setHovered(true);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType !== 'mouse') return;
+        setHovered(false);
+        const drag = dragRef.current;
+        // Нажали и ушли за край слайдера, не успев потащить: захвата ещё нет, отпускание сюда не придёт.
+        if (drag.dragging && !drag.moved) {
+          drag.dragging = false;
+          drag.pointerId = null;
+          setDragging(false);
+        }
+      }}
+      // Фокус с клавиатуры ставит автопрокрутку на паузу; фокус после клика мышью — нет.
+      onFocus={(event) => {
+        if (event.target.matches(':focus-visible')) setFocused(true);
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocused(false);
+        }
+      }}
     >
       <div
         className="showcase__stage"
@@ -785,22 +607,6 @@ export function HeroCarousel() {
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerCancel={onPointerCancel}
-        onPointerEnter={(event) => {
-          if (event.pointerType !== 'mouse') return;
-          hoverRef.current = true;
-          pauseAutoplay();
-        }}
-        onPointerLeave={(event) => {
-          if (event.pointerType !== 'mouse') return;
-          hoverRef.current = false;
-          const drag = dragRef.current;
-          // Нажали и ушли за край слайдера, не успев потащить: захвата ещё нет, отпускание сюда не придёт.
-          if (drag.dragging && !drag.moved) {
-            drag.dragging = false;
-            drag.pointerId = null;
-          }
-          if (!drag.dragging) resumeAutoplaySoon();
-        }}
       >
         <div className="showcase__scene" id="showcase-scene" ref={sceneRef}>
           <div className="showcase__space">
@@ -812,24 +618,67 @@ export function HeroCarousel() {
                 offset={wrapOffset(index, active)}
                 onSelect={() => {
                   if (dragRef.current.moved) return;
-                  select(index);
+                  goTo(index);
                 }}
               />
             ))}
           </div>
         </div>
       </div>
-      <div className="showcase__pager">
-        {heroCards.map((card, index) => (
-          <button
-            type="button"
-            key={card.id}
-            className="showcase__dot"
-            aria-label={`Показать: ${card.title}`}
-            aria-current={index === active ? 'true' : undefined}
-            onClick={() => select(index)}
-          />
-        ))}
+      <div className="showcase__controls">
+        <button
+          type="button"
+          className="showcase__arrow"
+          aria-label="Предыдущий слайд"
+          onClick={() => goTo(active - 1)}
+        >
+          <ArrowIcon direction="left" />
+        </button>
+        <div className="showcase__pager" role="group" aria-label="Выбор слайда">
+          {heroCards.map((card, index) => {
+            const current = index === active;
+            return (
+              <button
+                type="button"
+                key={card.id}
+                className="showcase__dot"
+                aria-label={`Слайд ${index + 1} из ${TOTAL}: ${card.title}`}
+                aria-current={current ? 'true' : undefined}
+                onClick={() => goTo(index)}
+              >
+                {current && mounted ? (
+                  <span
+                    className="showcase__dot-fill"
+                    style={{
+                      animationPlayState: running ? 'running' : 'paused',
+                    }}
+                    onAnimationEnd={(event) => {
+                      if (event.animationName === 'showcase-dot-fill') move(1);
+                    }}
+                  />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          type="button"
+          className="showcase__arrow"
+          aria-label="Следующий слайд"
+          onClick={() => goTo(active + 1)}
+        >
+          <ArrowIcon direction="right" />
+        </button>
+        <button
+          type="button"
+          className="showcase__playpause"
+          aria-label={
+            playing ? 'Остановить автопрокрутку' : 'Включить автопрокрутку'
+          }
+          onClick={() => setPlaying((value) => !value)}
+        >
+          {playing ? <PauseIcon /> : <PlayIcon />}
+        </button>
       </div>
     </div>
   );

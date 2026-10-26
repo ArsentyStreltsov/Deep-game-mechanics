@@ -203,8 +203,7 @@ body {
 /* ───────────── Кнопки: как .button--primary / .button--outline на основном сайте ───────────── */
 .brief-button,
 .arrow-button,
-.compact-cta,
-.site-footer__cta {
+.compact-cta {
   min-height: 52px;
   padding: 8px 20px;
   border: 1px solid transparent;
@@ -232,8 +231,7 @@ body {
 }
 .brief-button:hover,
 .arrow-button:hover,
-.compact-cta:hover,
-.site-footer__cta:hover {
+.compact-cta:hover {
   background: var(--deep-primary-hover);
   filter: none;
   transform: none;
@@ -241,8 +239,7 @@ body {
 }
 .brief-button:active,
 .arrow-button:active,
-.compact-cta:active,
-.site-footer__cta:active {
+.compact-cta:active {
   background: var(--deep-primary-press);
   filter: none;
   transform: none;
@@ -753,73 +750,8 @@ body {
   background: transparent;
   color: var(--deep-primary);
 }
-.project-summary__success {
-  border-radius: 12px;
-}
 
 /* окно «Обсудить проект» */
-.discuss-modal {
-  background: rgba(5, 6, 10, 0.72);
-}
-.discuss-modal__dialog {
-  border: 1px solid var(--deep-border-2);
-  border-radius: 12px;
-  background: #141517;
-  color: var(--deep-text);
-  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.6);
-}
-.discuss-modal__close:hover {
-  background: var(--deep-surface-2);
-  color: var(--deep-text);
-}
-.discuss-modal__eyebrow {
-  color: var(--deep-link);
-  font-weight: 600;
-}
-.discuss-modal__dialog > h3 {
-  font-weight: 400;
-  letter-spacing: -0.04em;
-}
-.discuss-field > span em {
-  color: var(--deep-link);
-}
-.discuss-field > span small {
-  color: var(--deep-muted-2);
-}
-.discuss-field input,
-.discuss-field textarea {
-  border-color: var(--deep-border-2);
-  background: var(--deep-canvas);
-  color: var(--deep-text);
-  font: 350 16px/1.4 var(--font-mono);
-}
-.discuss-field input::placeholder,
-.discuss-field textarea::placeholder {
-  color: var(--deep-muted-2);
-}
-.discuss-field input:focus,
-.discuss-field textarea:focus {
-  border-color: var(--deep-link);
-  box-shadow: 0 0 0 4px rgba(0, 55, 194, 0.35);
-}
-.discuss-field__error {
-  color: #ff8a8a;
-}
-.discuss-modal__submit {
-  border-radius: var(--deep-radius-btn);
-  background: var(--deep-primary);
-  font: 350 18px/1.25 var(--font-mono);
-  letter-spacing: 0;
-  text-transform: none;
-}
-.discuss-modal__submit:hover {
-  background: var(--deep-primary-hover);
-  filter: none;
-  transform: none;
-}
-.discuss-modal__submit:active {
-  background: var(--deep-primary-press);
-}
 
 /* ───────────── Аналитика ───────────── */
 .analytics__heading h2 {
@@ -851,88 +783,6 @@ body {
 .scenario-tabs button.is-selected:hover {
   background: var(--deep-primary);
   color: #fff;
-}
-.kpi-card,
-.chart-card {
-  border-color: var(--deep-border);
-  border-radius: var(--deep-radius-card);
-  background: var(--deep-surface);
-  box-shadow: none;
-}
-.kpi-card__line strong {
-  color: var(--deep-link);
-  font-weight: 600;
-}
-.delta {
-  background: rgba(255, 90, 130, 0.14);
-  color: #ff7a9e;
-}
-.delta--up {
-  background: rgba(40, 200, 100, 0.14);
-  color: #4ddc7d;
-}
-.kpi-card__spark-fill {
-  fill: rgba(0, 55, 194, 0.38);
-}
-.kpi-card__spark-line {
-  stroke: #6c95ff;
-}
-.chart-card h3 {
-  font-weight: 400;
-}
-.chart-card__heading button {
-  border-color: var(--deep-border-2);
-  border-radius: 12px;
-  background: transparent;
-  color: var(--deep-text);
-}
-.chart-card__heading button img {
-  filter: brightness(0) invert(1);
-}
-.chart-period__trigger,
-.chart-period__calendar,
-.chart-period__chevron {
-  color: var(--deep-text);
-}
-.chart-period__menu {
-  border-color: var(--deep-border-2);
-  border-radius: 12px;
-  background: #141517;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-}
-.chart-period__menu button {
-  color: var(--deep-text-soft);
-}
-.chart-period__menu button.is-selected,
-.chart-period__menu button:hover {
-  background: var(--deep-surface-2);
-  color: var(--deep-text);
-}
-.chart__ticks,
-.chart__bar-wrap small {
-  color: var(--deep-muted-2);
-}
-.chart__bar {
-  border-radius: 8px 8px 0 0;
-  background: linear-gradient(180deg, #3d6bff, #0037c2);
-}
-.totals-strip {
-  border: 1px solid rgba(138, 170, 255, 0.28);
-  border-radius: var(--deep-radius-card);
-  background: linear-gradient(120deg, #001a5c 0%, #0037c2 80%, #0a45e0 120%);
-}
-.total-card {
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-}
-.total-card strong {
-  font-weight: 600;
-}
-.analytics-features {
-  color: var(--deep-muted);
-}
-.analytics-features > span + span::before {
-  background: rgba(255, 255, 255, 0.16);
 }
 
 /* ───────────── FAQ ───────────── */
@@ -968,52 +818,6 @@ body {
 }
 
 /* ───────────── Подвал и страница кейсов ───────────── */
-.site-footer {
-  width: 100%;
-  margin: 72px 0 0;
-  padding: 0 40px;
-  border-top: 1px solid var(--deep-border);
-  background: var(--deep-canvas);
-}
-.site-footer__bar {
-  min-height: 88px;
-}
-.site-footer__brand {
-  width: auto;
-  height: auto;
-  flex: 0 0 auto;
-}
-.site-footer__nav a {
-  border-radius: 8px;
-  color: var(--deep-text);
-  font-size: 18px;
-  font-weight: 350;
-}
-.site-footer__nav a:hover {
-  background: var(--deep-surface-2);
-  color: var(--deep-text);
-  transform: none;
-}
-.site-footer__cta {
-  width: auto;
-  flex: 0 0 auto;
-}
-.site-footer > small {
-  margin-top: 0;
-  padding: 18px 0 22px;
-  border-top: 1px solid var(--deep-border);
-  color: var(--deep-muted-2);
-  font-size: 13px;
-}
-.site-footer .brand-mark small {
-  display: inline;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: inherit;
-  font: 600 11.5px/1 var(--font-mono);
-  text-align: left;
-}
 
 .cases-page {
   padding-top: 0;
@@ -1050,7 +854,7 @@ body {
   border-radius: var(--deep-radius-card);
   background: var(--deep-surface);
 }
-.cases-card__body span {
+.cases-card__kind {
   color: var(--deep-link);
   font-weight: 350;
 }
@@ -1058,7 +862,7 @@ body {
   font-weight: 400;
   letter-spacing: -0.03em;
 }
-.cases-card__body p {
+.cases-card__text {
   color: var(--deep-muted);
 }
 
@@ -1083,10 +887,6 @@ body {
   .analytics__inner {
     width: calc(100% - 32px);
   }
-  .site-footer {
-    margin-top: 64px;
-    padding: 0 16px;
-  }
   .cases-page__bar {
     padding: 0 16px;
   }
@@ -1102,9 +902,6 @@ body {
 .compact-cta {
   flex: 0 0 auto;
   white-space: nowrap;
-}
-.chart-card__heading {
-  flex-wrap: wrap;
 }
 
 /* планшеты: компактная шапка (в исходной вёрстке так же уменьшались пункты меню) и одна колонка там, где две стали тесными */
@@ -1189,9 +986,6 @@ body {
       #000 calc(100% - 120px),
       transparent 100%
     );
-  }
-  .site-footer__bar {
-    padding-block: 16px;
   }
   .cases-page__bar {
     min-height: 72px;

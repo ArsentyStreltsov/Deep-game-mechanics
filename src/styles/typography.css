@@ -1,0 +1,43 @@
+/* ───────────── Шрифты: моно для заголовков и меток, гротеск для текста ─────────────
+   Cascadia Mono — фирменный шрифт deep-agency.ru, но длинные абзацы набором в моно читаются
+   тяжело: широкие знаки, неровная длина строки. Поэтому заголовки, кнопки, подписи, теги и цифры
+   остаются в моно, а текст для чтения (описания, ответы FAQ, шаги процесса) — в Inter.
+   Клиентские кейсы со своими шрифтами (brands.css) не трогаем. */
+
+:root {
+  --font-text:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+}
+
+/* префикс body — чтобы перебить font-семейство в правилах тем и секций с тем же весом селектора */
+body .hero__line,
+body .section-lead,
+body .audience-card__body > p,
+body .telegram-banner__copy small,
+body .showcase__text,
+body .mechanic-card__description,
+body .mechanic-detail__head p,
+body .mechanic-detail__body li,
+body .process-step p,
+body .benefits-panel__heading > p,
+body .benefit-row p,
+body .configurator__intro p,
+body .builder-question__hint,
+body .builder-question__empty,
+body .project-summary > p,
+body .project-summary__note,
+body .project-summary__cta small,
+body .analytics__heading > p,
+body .analytics__demo,
+body .faq-item__panel p,
+body .dash-lead,
+body .dash-callout > span,
+body .final-cta__inner > p,
+body .site-footer__about p,
+body .site-footer__entity,
+body .site-footer__policy,
+body .site-footer__copy {
+  font-family: var(--font-text);
+  font-weight: 400;
+}

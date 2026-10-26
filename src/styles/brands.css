@@ -2,7 +2,6 @@
    У каждого кейса своя «упаковка»: фирменный цвет, шрифт, форма кнопок и скругления.
    Подход: токены --cv-* лежат на [data-brand], общие правила — на .case-visual--brand
    (панель кейса), .case-switch__item (переключатель проектов) и .cases-card--brand (страница /cases).
-   Кейс Deep (Telegram-боты) остаётся в тёмной теме сайта и сюда не попадает.
    Логотипы клиентов не используются — только цвет, типографика и форма.
    Шрифты — открытые аналоги (Montserrat, Inter, Rubik): фирменные гарнитуры клиентов закрыты. */
 
@@ -161,9 +160,6 @@
 }
 
 /* Deep: тёмная тема сайта (для переключателя проектов) */
-[data-brand='deep'] {
-  --cv-swatch: #5b8cff;
-}
 
 /* ═════ 2. Панель кейса ═════
    Сетка: сверху — заголовок слева и обложка справа, снизу — факты слева и цифры с кнопкой справа.
@@ -586,7 +582,7 @@ span.case-switch__item[data-brand]:hover {
   gap: 8px;
   padding: 6px 24px 26px;
 }
-.cases-card--brand .cases-card__body span {
+.cases-card--brand .cases-card__kind {
   align-self: start;
   justify-self: start;
   padding: 6px 11px 5px;
@@ -603,7 +599,7 @@ span.case-switch__item[data-brand]:hover {
   font: var(--cv-h-weight) 22px/1.18 var(--cv-font);
   letter-spacing: -0.02em;
 }
-.cases-card--brand .cases-card__body p {
+.cases-card--brand .cases-card__text {
   color: var(--cv-ink-2);
   font-size: 14px;
   font-weight: 450;

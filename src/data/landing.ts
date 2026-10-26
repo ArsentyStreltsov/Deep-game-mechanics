@@ -32,26 +32,34 @@ export const heroSubtitle = [
   'Разработку, дизайн и контент берём на себя — запуск на готовых модулях от 1 недели.',
 ] as const;
 
-/** Строка «для задач» под кнопками: короткие названия сценариев из блока «Для кого». */
+/**
+ * Строка «для задач» под кнопками: короткие названия сценариев из блока «Для кого». Каждая ведёт
+ * в раздел «Кейсы» на нужную задачу (`categoryId` совпадает с `caseCategories`); у «Своей механики»
+ * готового кейса нет — она открывает в «Возможностях» кастомные механики.
+ */
 export const heroAudience = [
-  { label: 'HR и внутриком', accent: 'blue' },
-  { label: 'Мероприятия', accent: 'cyan' },
-  { label: 'Лояльность и клубы', accent: 'violet' },
-  { label: 'Спецпроекты', accent: 'coral' },
-  { label: 'Трейд-маркетинг', accent: 'amber' },
-  { label: 'Своя механика', accent: 'green' },
-] as const satisfies readonly { label: string; accent: Accent }[];
+  { label: 'HR и внутриком', accent: 'blue', categoryId: 'hr' },
+  { label: 'Мероприятия', accent: 'cyan', categoryId: 'events' },
+  { label: 'Лояльность и клубы', accent: 'violet', categoryId: 'loyalty' },
+  { label: 'Спецпроекты', accent: 'coral', categoryId: 'external' },
+  { label: 'Трейд-маркетинг', accent: 'amber', categoryId: 'trade' },
+  { label: 'Своя механика', accent: 'green', categoryId: null },
+] as const satisfies readonly {
+  label: string;
+  accent: Accent;
+  categoryId: CaseCategoryId | null;
+}[];
 
 /**
- * Карточки слайдера на первом экране. Каждая — одно конкретное обещание,
- * подтверждённое разделами ниже по странице (механики, команды, аналитика, Telegram-боты).
- * Мини-интерфейс внутри карточки рисует HeroCarousel по `id`; цифры в карточках
- * с пометкой `demo` — иллюстрация, а не статистика (как и в разделе «Аналитика»).
+ * Карточки слайдера на первом экране — про платформу, а не про список механик (он ниже, в «Возможностях»):
+ * готовая игровая основа, баллы и награды, каналы, аналитика и механика на заказ. Скорость запуска
+ * сказана в подзаголовке и в FAQ, поэтому отдельной карточки у неё нет.
+ * Мини-интерфейс внутри карточки рисует HeroCarousel по `id`; цифры в карточках с пометкой `demo` —
+ * иллюстрация, а не статистика (как и в разделе «Аналитика»).
  * Переносы строк заголовка заданы вручную: всегда две строки, до ~15 знаков в каждой.
  */
 export type HeroCard = {
-  id:
-    'speed' | 'games' | 'custom' | 'rewards' | 'teams' | 'online' | 'analytics';
+  id: 'games' | 'rewards' | 'online' | 'analytics' | 'custom';
   /** Короткий ярлык над заголовком. */
   tag: string;
   title: string;
@@ -62,17 +70,17 @@ export type HeroCard = {
 };
 
 /**
- * Порядок важен: карточка с индексом 0 стоит в центре веера и видна чётче всех, поэтому первой идёт
- * «Готовые игры и механики» — то, что мы продаём. Слева от неё — «Любая механика на заказ»
- * (последняя в списке), а скорость запуска уже сказана в подзаголовке и стоит дальше от центра.
+ * Порядок важен: карточка с индексом 0 стоит в центре и видна чётче всех, поэтому первой идёт
+ * «Готовые игры» — то, что мы продаём. Слева от неё (последняя в списке) — «Механика на заказ»,
+ * справа — «Баллы, рейтинг и награды». Видны три карточки, остальные ждут «за кадром».
  */
 export const heroCards: readonly HeroCard[] = [
   {
     id: 'games',
-    tag: 'Механики',
-    title: 'Готовые игры и механики',
-    titleLines: ['Готовые игры', 'и механики'],
-    text: 'Квиз, колесо фортуны, memory и другие — настроим под ваш бренд и задачу.',
+    tag: 'Игры',
+    title: 'Готовые игры под ваш бренд',
+    titleLines: ['Готовые игры', 'под ваш бренд'],
+    text: 'Берём проверенную игру и меняем правила, оформление и награды под ваш проект.',
   },
   {
     id: 'rewards',
@@ -80,14 +88,6 @@ export const heroCards: readonly HeroCard[] = [
     title: 'Баллы, рейтинг и награды',
     titleLines: ['Баллы, рейтинг', 'и награды'],
     text: 'Участники видят прогресс и обменивают баллы на призы.',
-    demo: true,
-  },
-  {
-    id: 'teams',
-    tag: 'Команды',
-    title: 'Командные челленджи',
-    titleLines: ['Командные', 'челленджи'],
-    text: 'Офисы и города соревнуются в общем зачёте.',
     demo: true,
   },
   {
@@ -106,13 +106,6 @@ export const heroCards: readonly HeroCard[] = [
     demo: true,
   },
   {
-    id: 'speed',
-    tag: 'Скорость',
-    title: 'Запуск от 1 недели',
-    titleLines: ['Запуск от', '1 недели'],
-    text: 'Готовые модули вместо разработки с нуля. Особенная механика — кастомно, срок после брифа.',
-  },
-  {
     id: 'custom',
     tag: 'Кастом',
     title: 'Любая механика на заказ',
@@ -120,9 +113,6 @@ export const heroCards: readonly HeroCard[] = [
     text: 'Не нашли нужную игру? Спроектируем механику и сценарий под вашу задачу.',
   },
 ];
-
-/** @deprecated use heroCards */
-export const heroAdvantages = heroCards;
 
 export const audienceHeading = {
   title: 'Для кого мы собираем проекты',
@@ -284,14 +274,55 @@ export const caseCategories = [
 
 export type CaseCategoryId = (typeof caseCategories)[number]['id'];
 
-export const cases = [
+/**
+ * Визуальная тема кейса: у каждого клиента свой фирменный стиль (src/styles/brands.css,
+ * `[data-brand='…']`).
+ */
+export type CaseTheme =
+  | 'mts'
+  | 'mts-light'
+  | 'tbank'
+  | 'megafon'
+  | 'zewa'
+  | 'hh';
+
+export type CaseItem = {
+  id: string;
+  /** Как клиент называется сейчас. */
+  brand: string;
+  /** Прежнее название, если клиент переименован («ex-Тинькофф»): показываем рядом, чтобы его узнавали. */
+  brandNote?: string;
+  title: string;
+  description: string;
+  categoryId: CaseCategoryId;
+  task: string;
+  scale: string;
+  duration: string;
+  mechanics: readonly string[];
+  results: readonly { value: string; label: string }[];
+  artwork: 'mts' | 'club' | 'event' | 'promo' | 'referral';
+  theme: CaseTheme;
+  cover: string;
+};
+
+/** Бренд для текста и подписей: «Т-Банк (ex-Тинькофф)». */
+export function caseBrand(item: Pick<CaseItem, 'brand' | 'brandNote'>) {
+  return item.brandNote ? `${item.brand} (${item.brandNote})` : item.brand;
+}
+
+/** Ссылка на кейс в разделе «Кейсы» главной страницы: `/#case-<id>`. */
+export function caseHref(id: string) {
+  return `/#case-${id}`;
+}
+
+export const cases: readonly CaseItem[] = [
   {
     id: 'mts-30',
     brand: 'МТС',
     title: '30 лет',
     description:
       'Внутренняя юбилейная программа с играми, баллами и наградами для сотрудников.',
-    categoryId: 'hr' as const,
+    categoryId: 'hr',
     task: 'Собрать команду вокруг юбилея компании и дать понятный игровой маршрут участия.',
     scale: '24 000 участников',
     duration: 'Несколько недель активной программы',
@@ -301,16 +332,17 @@ export const cases = [
       { value: '92%', label: 'положительных отзывов' },
     ],
     artwork: 'mts',
-    theme: 'mts' as const,
+    theme: 'mts',
     cover: '/images/cases/mts-30.webp',
   },
   {
-    id: 'tinkoff',
-    brand: 'Тинькофф',
+    id: 'tbank',
+    brand: 'Т-Банк',
+    brandNote: 'ex-Тинькофф',
     title: 'Клуб участников',
     description:
       'Закрытая digital-среда с уровнями доступа, регулярными активностями и витриной наград.',
-    categoryId: 'loyalty' as const,
+    categoryId: 'loyalty',
     task: 'Удержать интерес участников и превратить разовые механики в привычку возвращаться.',
     scale: 'Тысячи участников клуба',
     duration: 'Постоянная платформа',
@@ -320,8 +352,8 @@ export const cases = [
       { value: 'Витрина', label: 'наград и привилегий' },
     ],
     artwork: 'club',
-    theme: 'tbank' as const,
-    cover: '/images/cases/tinkoff.webp',
+    theme: 'tbank',
+    cover: '/images/cases/tbank.webp',
   },
   {
     id: 'mts-codyland',
@@ -329,7 +361,7 @@ export const cases = [
     title: 'Кодиленд',
     description:
       'Игровой спецпроект вокруг события: единый сценарий, активности на площадке и digital-слой.',
-    categoryId: 'events' as const,
+    categoryId: 'events',
     task: 'Связать офлайн-событие и digital-участие в одном маршруте.',
     scale: 'Массовое событие для большой аудитории',
     duration: 'От подготовки до проведения события',
@@ -339,7 +371,7 @@ export const cases = [
       { value: 'Digital-слой', label: 'и активности на площадке' },
     ],
     artwork: 'event',
-    theme: 'mts-light' as const,
+    theme: 'mts-light',
     cover: '/images/cases/mts-codyland.webp',
   },
   {
@@ -348,7 +380,7 @@ export const cases = [
     title: 'Брюс Уиллис',
     description:
       'Внешний брендовый спецпроект с игровой механикой и сильным визуальным образом.',
-    categoryId: 'external' as const,
+    categoryId: 'external',
     task: 'Собрать запоминающийся сценарий вокруг бренда и вовлечь широкую аудиторию.',
     scale: 'Кампания для внешней аудитории',
     duration: 'Срок рекламной кампании',
@@ -358,7 +390,7 @@ export const cases = [
       { value: 'Под бренд', label: 'сценарий и визуал' },
     ],
     artwork: 'promo',
-    theme: 'megafon' as const,
+    theme: 'megafon',
     cover: '/images/cases/megafon.webp',
   },
   {
@@ -367,7 +399,7 @@ export const cases = [
     title: 'Трейд-механика',
     description:
       'Промо с проверкой покупок, баллами и призовым фондом для торговой активности.',
-    categoryId: 'trade' as const,
+    categoryId: 'trade',
     task: 'Связать покупку, участие в механике и выдачу награды в одном контуре.',
     scale: 'Федеральная трейд-кампания',
     duration: 'Промо-период',
@@ -377,7 +409,7 @@ export const cases = [
       { value: 'Призовой фонд', label: 'и проверка покупок' },
     ],
     artwork: 'referral',
-    theme: 'zewa' as const,
+    theme: 'zewa',
     cover: '/images/cases/zewa.webp',
   },
   {
@@ -386,7 +418,7 @@ export const cases = [
     title: 'Внешний спецпроект',
     description:
       'Брендированная механика для внешней аудитории: сценарий, контент и визуал под задачу кампании.',
-    categoryId: 'external' as const,
+    categoryId: 'external',
     task: 'Показать продукт через участие, а не через статичный лендинг.',
     scale: 'Кампания для внешней аудитории',
     duration: 'Срок спецпроекта',
@@ -396,32 +428,10 @@ export const cases = [
       { value: 'Под задачу', label: 'механика и визуал' },
     ],
     artwork: 'promo',
-    theme: 'hh' as const,
+    theme: 'hh',
     cover: '/images/cases/headhunter.webp',
   },
-  {
-    id: 'telegram-bots',
-    brand: 'Deep',
-    title: 'Telegram-боты с web app',
-    description:
-      'Онлайн- и офлайн-активности, QR-коды, задания и начисление баллов в одном сценарии.',
-    categoryId: 'events' as const,
-    task: 'Запустить активности там, где уже есть аудитория — в мессенджере и на площадке.',
-    scale: 'От локальной команды до массового события',
-    duration: 'От короткой активации до серии активностей',
-    mechanics: ['Telegram web app', 'QR-коды', 'Задания и баллы'],
-    results: [
-      { value: 'QR + баллы', label: 'в одном контуре' },
-      { value: 'Задания', label: 'и начисление баллов' },
-    ],
-    artwork: 'bot',
-    theme: 'deep' as const,
-    cover: '/images/cases/telegram-bots.webp',
-  },
-] as const;
-
-/** Визуальная тема кейса: у каждого клиента свой фирменный стиль, у Deep — тёмная тема сайта. */
-export type CaseTheme = (typeof cases)[number]['theme'];
+];
 
 export const mechanicsCatalog = [
   {
@@ -656,17 +666,15 @@ export const audienceCards: readonly AudienceCard[] = [
 /** Бренды из кейсов — строка «Проекты для …» под кнопками первого экрана. */
 export const heroProof = {
   label: 'Проекты для',
-  brands: Array.from(
-    new Set(cases.filter((item) => item.brand !== 'Deep').map((item) => item.brand)),
-  ),
+  brands: Array.from(new Set(cases.map((item) => item.brand))),
 };
 
 export const mechanicsLead =
   'Из чего собираем проект: выберите возможность — покажем, что внутри. Чего нет в списке, спроектируем под вашу задачу.';
 
 /**
- * «Как мы работаем»: кто что делает и что входит в проект. Формулировки собраны из того, что уже
- * обещают разделы страницы (hero, «Механики», «Аналитика», FAQ) — новых обещаний здесь нет.
+ * «Как мы работаем»: четыре шага от брифа до запуска. Список того, что входит в проект, здесь не
+ * повторяется: он уже есть в «Возможностях», карусели первого экрана и разделе «Аналитика».
  */
 export const processSection = {
   title: 'Как мы',
@@ -688,34 +696,6 @@ export const processSection = {
     {
       title: 'Запуск и сопровождение',
       text: 'Запускаем проект, следим за ним по аналитике и помогаем команде управлять контентом и активностями.',
-    },
-  ],
-  includedTitle: 'Что входит в проект',
-  included: [
-    {
-      title: 'Игровые механики',
-      text: 'Готовые игры или собственная механика — по вашей задаче',
-      href: '#mechanics',
-    },
-    {
-      title: 'Баллы, рейтинг, награды',
-      text: 'Участники видят прогресс и меняют баллы на призы',
-      href: '#mechanics',
-    },
-    {
-      title: 'Дизайн под бренд',
-      text: 'Визуал и контент в стиле вашего бренда или кампании',
-      href: '#cases',
-    },
-    {
-      title: 'Управление и аналитика',
-      text: 'Контент, роли и показатели проекта — в одном месте',
-      href: '#analytics',
-    },
-    {
-      title: 'Интеграции по задаче',
-      text: 'Подключаем ваши сервисы, если есть технический доступ',
-      href: '#integrations',
     },
   ],
 } as const;

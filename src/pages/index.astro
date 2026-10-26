@@ -10,8 +10,7 @@ import Configurator from '@/components/sections/Configurator';
 import Analytics from '@/components/sections/Analytics';
 import FAQ from '@/components/sections/FAQ';
 import FinalCta from '@/components/sections/FinalCta.astro';
-import { BrandMark } from '@/components/ui/BrandMark';
-import { navigation } from '@/data/landing';
+import SiteFooter from '@/components/sections/SiteFooter.astro';
 ---
 
 <BaseLayout
@@ -30,26 +29,5 @@ import { navigation } from '@/data/landing';
     <FAQ client:load />
     <FinalCta />
   </main>
-  <footer class="site-footer">
-    <div class="site-footer__bar">
-      <a
-        class="site-footer__brand"
-        href="#top"
-        aria-label="Deep — на главную"
-      >
-        <BrandMark />
-      </a>
-      <nav class="site-footer__nav" aria-label="Навигация в подвале">
-        {
-          navigation.map(([label, href]) => (
-            <a href={href}>{label}</a>
-          ))
-        }
-      </nav>
-      <a class="site-footer__cta" href="#configurator" data-open-contact
-        >Обсудить проект</a
-      >
-    </div>
-    <small>deep creative agency. Все права защищены</small>
-  </footer>
+  <SiteFooter pathname={Astro.url.pathname} />
 </BaseLayout>

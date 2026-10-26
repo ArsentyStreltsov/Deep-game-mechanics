@@ -1,0 +1,98 @@
+---
+import { BrandMark } from '@/components/ui/BrandMark';
+import { ArrowIcon } from '@/components/ui/ArrowIcon';
+import { navigation, navHref } from '@/data/landing';
+import { footerContacts, registrationLine, siteInfo } from '@/data/site';
+
+interface Props {
+  /** Адрес текущей страницы: на странице кейсов ссылки на разделы ведут на главную (`/#…`). */
+  pathname?: string;
+}
+
+const { pathname = '/' } = Astro.props;
+const home = pathname === '/' ? '#top' : '/';
+const contacts = footerContacts();
+const registration = registrationLine();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__main">
+      <div class="site-footer__about">
+        <a
+          class="site-footer__brand"
+          href={home}
+          aria-label="Deep — на главную"
+        >
+          <BrandMark />
+        </a>
+        <p>
+          Игровые механики для HR и маркетинга: разработка, дизайн и контент под
+          ключ.
+        </p>
+      </div>
+      <nav class="site-footer__nav" aria-labelledby="footer-nav-title">
+        <h2 class="site-footer__title" id="footer-nav-title">
+          Разделы
+        </h2>
+        <ul role="list">
+          {navigation.map(([label, href]) => (
+            <li>
+              <a href={navHref(href, pathname)}>{label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div class="site-footer__contact">
+        <h2 class="site-footer__title" id="footer-contact-title">
+          Связаться
+        </h2>
+        <ul role="list" aria-labelledby="footer-contact-title">
+          {contacts.map((item) => (
+            <li>
+              <span>{item.label}</span>
+              <a href={item.href}>{item.value}</a>
+            </li>
+          ))}
+          <li>
+            <a
+              href={siteInfo.contactsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Контакты на deep-agency.ru
+            </a>
+          </li>
+        </ul>
+        <a
+          class="arrow-button site-footer__cta"
+          href={pathname === '/' ? '#configurator' : '/#configurator'}
+          data-open-contact
+        >
+          <span>Обсудить проект</span>
+          <span aria-hidden="true" class="arrow-button__icon">
+            <ArrowIcon className="arrow-button__arrow" />
+          </span>
+        </a>
+      </div>
+    </div>
+    <div class="site-footer__legal">
+      <p class="site-footer__entity">
+        <span>
+          {siteInfo.legalName}
+          {registration ? ` · ${registration}` : ''}
+        </span>
+        <span>{siteInfo.legalAddress}</span>
+      </p>
+      <a
+        class="site-footer__policy"
+        href={siteInfo.policyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Политика конфиденциальности
+      </a>
+      <p class="site-footer__copy">deep creative agency. Все права защищены</p>
+    </div>
+  </div>
+</footer>

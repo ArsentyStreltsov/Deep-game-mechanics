@@ -44,7 +44,15 @@ export default function Hero() {
                   data-accent={item.accent}
                   style={cssVars({ '--i': index })}
                 >
-                  {item.label}
+                  {item.categoryId ? (
+                    <a href="#cases" data-case-category={item.categoryId}>
+                      {item.label}
+                    </a>
+                  ) : (
+                    <a href="#mechanics" data-mechanic-id="custom">
+                      {item.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

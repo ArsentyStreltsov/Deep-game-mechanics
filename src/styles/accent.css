@@ -71,6 +71,32 @@
     gap: 6px;
   }
 }
+/* чипы «Для задач» — ссылки в «Кейсы» (и «Своя механика» — в «Возможности»): кликабельна вся плашка */
+.hero__audience li {
+  position: relative;
+  cursor: pointer;
+}
+.hero__audience li a {
+  color: inherit;
+  text-decoration: none;
+}
+.hero__audience li a::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+}
+.hero__audience li:hover {
+  background: rgb(var(--accent-rgb) / 0.12);
+  color: #fff;
+}
+.hero__audience li a:focus-visible {
+  outline: none;
+}
+.hero__audience li a:focus-visible::after {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 2px;
+}
 
 /* ───────────── Для кого ───────────── */
 .audience .audience-card__more {
