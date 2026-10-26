@@ -132,6 +132,7 @@ export default function CaseStudy() {
                 <button
                   className={`case-switch__item${item.id === current.id ? ' is-active' : ''}`}
                   key={item.id}
+                  data-brand={item.theme}
                   type="button"
                   aria-pressed={item.id === current.id}
                   onClick={() => setActiveCaseId(item.id)}
@@ -140,7 +141,11 @@ export default function CaseStudy() {
                   {item.title}
                 </button>
               ) : (
-                <span className="case-switch__item is-active" key={item.id}>
+                <span
+                  className="case-switch__item is-active"
+                  key={item.id}
+                  data-brand={item.theme}
+                >
                   <b>{item.brand}</b>
                   {item.title}
                 </span>
@@ -186,7 +191,8 @@ export default function CaseStudy() {
             </div>
           </div>
           <article
-            className={`case-visual case-visual--${current.artwork}${current.cover ? ' case-visual--cover' : ''}`}
+            className={`case-visual case-visual--${current.artwork}${current.cover ? ' case-visual--cover' : ''}${current.theme === 'deep' ? '' : ' case-visual--brand'}`}
+            data-brand={current.theme}
             aria-label={`Пример: ${current.brand} — ${current.title}`}
           >
             <div className="case-visual__art" aria-hidden="true">

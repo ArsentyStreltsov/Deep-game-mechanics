@@ -301,6 +301,7 @@ export const cases = [
       { value: '92%', label: 'положительных отзывов' },
     ],
     artwork: 'mts',
+    theme: 'mts' as const,
     cover: '/images/cases/mts-30.webp',
   },
   {
@@ -319,6 +320,7 @@ export const cases = [
       { value: 'Витрина', label: 'наград и привилегий' },
     ],
     artwork: 'club',
+    theme: 'tbank' as const,
     cover: '/images/cases/tinkoff.webp',
   },
   {
@@ -337,6 +339,7 @@ export const cases = [
       { value: 'Digital-слой', label: 'и активности на площадке' },
     ],
     artwork: 'event',
+    theme: 'mts-light' as const,
     cover: '/images/cases/mts-codyland.webp',
   },
   {
@@ -355,6 +358,7 @@ export const cases = [
       { value: 'Под бренд', label: 'сценарий и визуал' },
     ],
     artwork: 'promo',
+    theme: 'megafon' as const,
     cover: '/images/cases/megafon.webp',
   },
   {
@@ -373,6 +377,7 @@ export const cases = [
       { value: 'Призовой фонд', label: 'и проверка покупок' },
     ],
     artwork: 'referral',
+    theme: 'zewa' as const,
     cover: '/images/cases/zewa.webp',
   },
   {
@@ -391,6 +396,7 @@ export const cases = [
       { value: 'Под задачу', label: 'механика и визуал' },
     ],
     artwork: 'promo',
+    theme: 'hh' as const,
     cover: '/images/cases/headhunter.webp',
   },
   {
@@ -409,9 +415,13 @@ export const cases = [
       { value: 'Задания', label: 'и начисление баллов' },
     ],
     artwork: 'bot',
+    theme: 'deep' as const,
     cover: '/images/cases/telegram-bots.webp',
   },
 ] as const;
+
+/** Визуальная тема кейса: у каждого клиента свой фирменный стиль, у Deep — тёмная тема сайта. */
+export type CaseTheme = (typeof cases)[number]['theme'];
 
 export const mechanicsCatalog = [
   {

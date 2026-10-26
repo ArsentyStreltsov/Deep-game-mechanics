@@ -357,6 +357,12 @@ html.motion-ok .case-visual__copy {
 html.motion-ok .case-visual__meta {
   animation: fade-in 0.4s ease backwards;
 }
+/* в панели «в стиле бренда» текст лежит прямо в сетке (copy — display: contents), поэтому анимируем его части */
+html.motion-ok .case-visual--brand .case-visual__head,
+html.motion-ok .case-visual--brand .case-facts,
+html.motion-ok .case-visual--brand .case-stats {
+  animation: rise-sm 0.5s ease backwards;
+}
 
 /* ───────────── Конфигуратор ───────────── */
 html.motion-ok .builder-options button.is-selected {

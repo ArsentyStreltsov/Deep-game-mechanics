@@ -43,7 +43,11 @@ const pathname = Astro.url.pathname;
             caseCategories.find((entry) => entry.id === item.categoryId)?.title ??
             item.categoryId;
           return (
-            <article class={`cases-card cases-card--${item.artwork}`} data-reveal>
+            <article
+              class={`cases-card cases-card--${item.artwork}${item.theme === 'deep' ? '' : ' cases-card--brand'}`}
+              data-brand={item.theme}
+              data-reveal
+            >
               <div class="cases-card__art" aria-hidden="true">
                 {item.cover && (
                   <img
