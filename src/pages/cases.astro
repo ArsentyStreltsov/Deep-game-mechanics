@@ -29,7 +29,7 @@ const pathname = Astro.url.pathname;
       </nav>
       <a class="brief-button" href="/#configurator">Обсудить проект</a>
     </header>
-    <section class="cases-page__intro section-shell">
+    <section class="cases-page__intro section-shell" data-reveal>
       <h1 class="section-title">Все <span>кейсы</span></h1>
       <p class="section-lead">
         Примеры проектов на платформенной базе Deep. Механика, сценарий и
@@ -43,7 +43,7 @@ const pathname = Astro.url.pathname;
             caseCategories.find((entry) => entry.id === item.categoryId)?.title ??
             item.categoryId;
           return (
-            <article class={`cases-card cases-card--${item.artwork}`}>
+            <article class={`cases-card cases-card--${item.artwork}`} data-reveal>
               <div class="cases-card__art" aria-hidden="true">
                 {item.cover && (
                   <img

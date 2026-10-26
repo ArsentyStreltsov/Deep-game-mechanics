@@ -1,3 +1,9 @@
+/**
+ * Палитра акцентов: у каждой задачи свой цвет (иконка, свечение карточки, точка в фильтре).
+ * Значения — в src/styles/accent.css (`[data-accent='…']`), здесь только имена.
+ */
+export type Accent = 'blue' | 'violet' | 'cyan' | 'coral' | 'amber' | 'green';
+
 /** Порядок ссылок = порядок секций на странице. */
 export const navigation = [
   ['Для кого', '#what-we-do'],
@@ -28,13 +34,13 @@ export const heroSubtitle = [
 
 /** Строка «для задач» под кнопками: короткие названия сценариев из блока «Для кого». */
 export const heroAudience = [
-  'HR и внутриком',
-  'Мероприятия',
-  'Лояльность и клубы',
-  'Спецпроекты',
-  'Трейд-маркетинг',
-  'Своя механика',
-] as const;
+  { label: 'HR и внутриком', accent: 'blue' },
+  { label: 'Мероприятия', accent: 'cyan' },
+  { label: 'Лояльность и клубы', accent: 'violet' },
+  { label: 'Спецпроекты', accent: 'coral' },
+  { label: 'Трейд-маркетинг', accent: 'amber' },
+  { label: 'Своя механика', accent: 'green' },
+] as const satisfies readonly { label: string; accent: Accent }[];
 
 /**
  * Карточки слайдера на первом экране. Каждая — одно конкретное обещание,
@@ -135,6 +141,7 @@ export const caseCategories = [
     lead: 'Игровой сценарий для онбординга, обучения и вовлечения сотрудников.',
     tags: ['Онбординг', 'Обучение', 'Вовлечение', 'Корпоративные события'],
     image: '/images/audience/hr.webp',
+    accent: 'blue' as Accent,
     benefits: [
       {
         title: 'Обучение и онбординг',
@@ -165,6 +172,7 @@ export const caseCategories = [
       'Программы лояльности',
     ],
     image: '/images/audience/platforms.webp',
+    accent: 'violet' as Accent,
     benefits: [
       {
         title: 'Закрытый контур',
@@ -195,6 +203,7 @@ export const caseCategories = [
       'Telegram web app',
     ],
     image: '/images/audience/events.webp',
+    accent: 'cyan' as Accent,
     benefits: [
       {
         title: 'Один сценарий события',
@@ -220,6 +229,7 @@ export const caseCategories = [
     lead: 'Игровые промо и брендированные кампании для клиентов и широкой аудитории.',
     tags: ['Игровые промо', 'Челленджи', 'Конкурсы', 'Брендовые кампании'],
     image: '/images/audience/external.webp',
+    accent: 'coral' as Accent,
     benefits: [
       {
         title: 'Бренд в центре сценария',
@@ -250,6 +260,7 @@ export const caseCategories = [
       'Контроль кампании',
     ],
     image: '/images/audience/trade.webp',
+    accent: 'amber' as Accent,
     benefits: [
       {
         title: 'Проверка чеков / ОФД',
@@ -416,6 +427,7 @@ export const mechanicsCatalog = [
       'Брендирование и правила под конкретный проект',
     ],
     icon: 'quiz',
+    accent: 'coral' as Accent,
   },
   {
     id: 'custom',
@@ -430,6 +442,7 @@ export const mechanicsCatalog = [
       'Связка с рейтингом, наградами и интеграциями',
     ],
     icon: 'blocks',
+    accent: 'green' as Accent,
   },
   {
     id: 'integrations',
@@ -451,6 +464,7 @@ export const mechanicsCatalog = [
       'Webhooks — обмен событиями',
     ],
     icon: 'plug',
+    accent: 'cyan' as Accent,
   },
   {
     id: 'teams',
@@ -464,6 +478,7 @@ export const mechanicsCatalog = [
       'Сценарии для офисов, городов и подразделений',
     ],
     icon: 'trophy',
+    accent: 'amber' as Accent,
   },
   {
     id: 'learning',
@@ -479,6 +494,7 @@ export const mechanicsCatalog = [
       'Связка с корпоративными системами при наличии доступа',
     ],
     icon: 'learning',
+    accent: 'blue' as Accent,
   },
   {
     id: 'shop',
@@ -492,6 +508,7 @@ export const mechanicsCatalog = [
       'Учёт выдачи и остатков',
     ],
     icon: 'gift',
+    accent: 'violet' as Accent,
   },
   {
     id: 'live',
@@ -505,6 +522,7 @@ export const mechanicsCatalog = [
       'Общий рейтинг по итогам стрима',
     ],
     icon: 'video',
+    accent: 'cyan' as Accent,
   },
   {
     id: 'receipts',
@@ -518,6 +536,7 @@ export const mechanicsCatalog = [
       'Контроль кампании и антифрод-сценарии',
     ],
     icon: 'receipt',
+    accent: 'amber' as Accent,
   },
 ] as const;
 
@@ -592,6 +611,7 @@ export const customScenario = {
   lead: 'Нужна механика, которой нет среди готовых? Придумаем правила, сценарий и визуал под вас.',
   tags: ['Свои правила', 'Свой визуал', 'Интеграции по задаче'],
   image: '/images/audience/custom.webp',
+  accent: 'green' as Accent,
 } as const;
 
 export type AudienceCard = {
@@ -600,6 +620,7 @@ export type AudienceCard = {
   lead: string;
   tags: readonly string[];
   image: string;
+  accent: Accent;
   /** Раздел «Кейсы» откроется на этой задаче. null — карточка ведёт в форму обсуждения. */
   categoryId: CaseCategoryId | null;
 };
@@ -611,6 +632,7 @@ export const audienceCards: readonly AudienceCard[] = [
     lead: item.lead,
     tags: item.tags,
     image: item.image,
+    accent: item.accent,
     categoryId: item.id,
   })),
   { ...customScenario, categoryId: null },

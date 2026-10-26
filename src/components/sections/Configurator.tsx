@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
 import { IconTile } from '@/components/ui/IconTile';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
+import type { Accent } from '@/data/landing';
 
 /** Названия задач совпадают с блоком «Для кого» и разделом «Кейсы». */
 const questions = [
@@ -52,6 +53,9 @@ const questions = [
   },
 ];
 const defaultSelection = [0, 1, [0, 1], 0] as const;
+
+/** Цвет значка у каждого вопроса — из общей палитры задач. */
+const questionAccents: readonly Accent[] = ['blue', 'cyan', 'violet', 'green'];
 
 /** Задачи, где участники — не сотрудники: меняет слово в заголовке примера. */
 const externalTasks = [
@@ -220,7 +224,7 @@ export default function Configurator() {
       aria-labelledby="configurator-heading"
     >
       <div className="configurator__inner">
-        <header className="configurator__intro">
+        <header className="configurator__intro" data-reveal>
           <h2 id="configurator-heading">
             <span>Соберите пример</span> своего проекта
           </h2>
@@ -232,12 +236,16 @@ export default function Configurator() {
           </p>
         </header>
         <div className="configurator__columns">
-          <div className="builder-panel">
+          <div className="builder-panel" data-reveal>
             <h3>
               Настройте <span>свой проект</span>
             </h3>
             {questions.map((question, questionIndex) => (
-              <fieldset className="builder-question" key={question.title}>
+              <fieldset
+                className="builder-question"
+                key={question.title}
+                data-accent={questionAccents[questionIndex]}
+              >
                 <IconTile>
                   <img
                     src={figmaAssets.configuratorIcons[questionIndex]}
@@ -273,10 +281,10 @@ export default function Configurator() {
               </fieldset>
             ))}
           </div>
-          <aside className="project-summary" aria-live="polite">
+          <aside className="project-summary" aria-live="polite" data-reveal>
             <span className="project-summary__eyebrow">Детали проекта</span>
-            <h3>{title}</h3>
-            <p>{description}</p>
+            <h3 key={title}>{title}</h3>
+            <p key={description}>{description}</p>
             <div className="summary-tags">
               {[
                 ...integrations.filter((item) => item !== 'Нет'),

@@ -5,6 +5,7 @@ import {
 } from '@/data/landing';
 import { IconTile } from '@/components/ui/IconTile';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
+import { cssVars } from '@/lib/css-vars';
 
 export default function Audience() {
   return (
@@ -13,14 +14,14 @@ export default function Audience() {
       id="what-we-do"
       aria-labelledby="audience-heading"
     >
-      <div className="audience__heading">
+      <div className="audience__heading" data-reveal>
         <h2 className="section-title" id="audience-heading">
           Для кого мы собираем <span>проекты</span>
         </h2>
         <p className="section-lead">{audienceHeading.lead}</p>
       </div>
       <div className="audience__grid">
-        {audienceCards.map((item) => {
+        {audienceCards.map((item, index) => {
           const example = item.categoryId
             ? featuredCaseForCategory(item.categoryId)
             : null;
@@ -28,7 +29,14 @@ export default function Audience() {
             ? `Кейс: ${example.brand} · ${example.title}`
             : 'Обсудить задачу';
           return (
-            <article className="audience-card" key={item.id}>
+            <article
+              className="audience-card"
+              key={item.id}
+              data-accent={item.accent}
+              data-spot
+              data-reveal
+              style={cssVars({ '--i': index })}
+            >
               <div className="audience-card__body">
                 <h3>
                   {example ? (
@@ -66,8 +74,8 @@ export default function Audience() {
                 className="audience-card__art"
                 src={item.image}
                 alt=""
-                width={640}
-                height={640}
+                width={512}
+                height={512}
                 loading="lazy"
                 decoding="async"
               />
@@ -77,6 +85,7 @@ export default function Audience() {
       </div>
       <a
         className="telegram-banner"
+        data-reveal
         href="#cases"
         data-case-category="events"
         data-case-id="telegram-bots"

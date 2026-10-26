@@ -30,6 +30,12 @@ export default function SiteHeader() {
       }
       setActive(navIds.includes(current) ? current : '');
       setScrolled(window.scrollY > 8);
+      // тонкая полоска прогресса прокрутки под шапкой (ширина = --progress)
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress =
+        scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+      headerRef.current?.style.setProperty('--progress', progress.toFixed(4));
     }
     function schedule() {
       if (!frame) frame = window.requestAnimationFrame(update);
@@ -135,6 +141,7 @@ export default function SiteHeader() {
           Обсудить проект
         </a>
       </nav>
+      <span className="site-header__progress" aria-hidden="true" />
     </header>
   );
 }

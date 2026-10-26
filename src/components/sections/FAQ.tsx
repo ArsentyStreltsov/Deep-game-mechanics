@@ -17,7 +17,7 @@ export default function FAQ() {
       id="faq"
       aria-labelledby="faq-heading"
     >
-      <header className="faq__heading">
+      <header className="faq__heading" data-reveal>
         <h2 className="section-title" id="faq-heading">
           FAQ
         </h2>
@@ -32,6 +32,7 @@ export default function FAQ() {
             <div
               className={`faq-item${isOpen ? ' is-open' : ''}`}
               key={item.question}
+              data-reveal
             >
               <button
                 type="button"

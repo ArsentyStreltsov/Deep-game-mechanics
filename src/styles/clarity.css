@@ -649,7 +649,7 @@ span.case-switch__item:hover {
   position: absolute;
   top: 50%;
   right: clamp(16px, 4vw, 72px);
-  width: clamp(200px, 22vw, 330px);
+  width: clamp(190px, 19vw, 280px);
   height: auto;
   aspect-ratio: 1;
   translate: 0 -50%;

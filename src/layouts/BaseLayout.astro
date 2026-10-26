@@ -1,5 +1,6 @@
 ---
 import '@/styles/main.css';
+import Motion from '@/components/ui/Motion';
 
 interface Props {
   title: string;
@@ -21,6 +22,14 @@ const { title, description, lang = 'ru' } = Astro.props;
     {description && <meta name="description" content={description} />}
   </head>
   <body>
+    <!-- Анимации включаются классом motion-ok до первой отрисовки; при prefers-reduced-motion
+         класса нет, и страница остаётся статичной. -->
+    <script is:inline>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion-ok');
+      }
+    </script>
     <slot />
+    <Motion client:load />
   </body>
 </html>

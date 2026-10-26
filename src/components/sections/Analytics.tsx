@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
 import { IconTile } from '@/components/ui/IconTile';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
+import { cssVars } from '@/lib/css-vars';
 
 /** Названия задач — те же, что в блоке «Для кого» и в разделе «Кейсы». */
 const scenarios = [
@@ -18,38 +20,42 @@ const periods = [
 const kpis = [
   {
     label: 'Участники',
-    value: '8 430',
+    value: 8430,
+    scaled: true,
     delta: '+5%',
     positive: true,
     trend: 'M0 48 C20 34 28 42 43 37 S59 14 76 12 S93 15 100 0',
   },
   {
     label: 'Доля участвующих',
-    value: '74%',
+    value: 74,
+    suffix: '%',
     delta: '-0,2%',
     positive: false,
     trend: 'M0 48 C20 34 28 42 43 37 S59 14 76 12 S93 15 100 0',
   },
   {
     label: 'Игровые сессии',
-    value: '31 420',
+    value: 31420,
+    scaled: true,
     delta: '+1%',
     positive: true,
     trend: 'M0 48 C20 34 28 42 43 37 S59 14 76 12 S93 15 100 0',
   },
   {
     label: 'Активностей на участника',
-    value: '4,7',
+    value: 4.7,
+    decimals: 1,
     delta: '-0,1%',
     positive: false,
     trend: 'M0 48 C20 34 28 42 43 37 S59 14 76 12 S93 15 100 0',
   },
-];
+] as const;
 const totals = [
-  { icon: 'users', label: 'Зарегистрированные', value: '8 430' },
-  { icon: 'lightning', label: 'Активные сегодня', value: '3 120' },
-  { icon: 'gamepad', label: 'Игровые сессии', value: '31 420' },
-  { icon: 'shield', label: 'Выполнено заданий', value: '12 880' },
+  { icon: 'users', label: 'Зарегистрированные', value: 8430 },
+  { icon: 'lightning', label: 'Активные сегодня', value: 3120 },
+  { icon: 'gamepad', label: 'Игровые сессии', value: 31420 },
+  { icon: 'shield', label: 'Выполнено заданий', value: 12880 },
 ] as const;
 const features = [
   'Контент, задания и активности',
@@ -74,7 +80,7 @@ export default function Analytics() {
       aria-labelledby="analytics-heading"
     >
       <div className="analytics__inner">
-        <header className="analytics__heading">
+        <header className="analytics__heading" data-reveal>
           <h2 id="analytics-heading">
             Следите за проектом <span>в реальном времени</span>
           </h2>
@@ -86,7 +92,11 @@ export default function Analytics() {
             Демо-данные — не результаты реального проекта
           </span>
         </header>
-        <nav className="scenario-tabs" aria-label="Сценарии аналитики">
+        <nav
+          className="scenario-tabs"
+          aria-label="Сценарии аналитики"
+          data-reveal
+        >
           {scenarios.map((name, i) => (
             <button
               type="button"
@@ -99,19 +109,22 @@ export default function Analytics() {
             </button>
           ))}
         </nav>
-        <div className="analytics-grid">
+        <div className="analytics-grid" data-reveal="mark">
           <div className="kpi-grid">
             {kpis.map((item) => (
-              <article className="kpi-card" key={item.label}>
+              <article className="kpi-card" key={item.label} data-reveal>
                 <span className="kpi-card__label">{item.label}</span>
                 <div className="kpi-card__line">
                   <strong>
-                    {item.label === 'Доля участвующих' ||
-                    item.label === 'Активностей на участника'
-                      ? item.value
-                      : Math.round(
-                          Number(item.value.replace(/[^\d]/g, '')) * multiplier,
-                        ).toLocaleString('ru-RU')}
+                    <AnimatedNumber
+                      value={
+                        'scaled' in item
+                          ? Math.round(item.value * multiplier)
+                          : item.value
+                      }
+                      decimals={'decimals' in item ? item.decimals : 0}
+                      suffix={'suffix' in item ? item.suffix : ''}
+                    />
                   </strong>
                   <span className={`delta${item.positive ? ' delta--up' : ''}`}>
                     {item.delta}
@@ -132,7 +145,7 @@ export default function Analytics() {
               </article>
             ))}
           </div>
-          <article className="chart-card">
+          <article className="chart-card" data-reveal>
             <div className="chart-card__heading">
               <h3>Активность по дням</h3>
               <div className="chart-period">
@@ -197,7 +210,7 @@ export default function Analytics() {
                 )}
               </div>
             </div>
-            <div className="chart">
+            <div className="chart" data-reveal="mark">
               <div className="chart__ticks">
                 {[800, 600, 400, 200, 0].map((n) => (
                   <span key={n}>{n}</span>
@@ -210,6 +223,7 @@ export default function Analytics() {
                       className="chart__bar"
                       style={{
                         height: `${Math.min(100, (height * multiplier) / 8)}%`,
+                        ...cssVars({ '--i': i }),
                       }}
                     />
                     <small>
@@ -221,7 +235,7 @@ export default function Analytics() {
             </div>
           </article>
         </div>
-        <div className="totals-strip">
+        <div className="totals-strip" data-reveal>
           {totals.map((item) => (
             <article className="total-card" key={item.label}>
               <IconTile className="total-card__icon">
@@ -230,15 +244,13 @@ export default function Analytics() {
               <div>
                 <small>{item.label}</small>
                 <strong>
-                  {Math.round(
-                    Number(item.value.replace(/[\s\u00a0]/g, '')) * multiplier,
-                  ).toLocaleString('ru-RU')}
+                  <AnimatedNumber value={Math.round(item.value * multiplier)} />
                 </strong>
               </div>
             </article>
           ))}
         </div>
-        <div className="analytics-features">
+        <div className="analytics-features" data-reveal>
           {features.map((name) => (
             <span key={name}>{name}</span>
           ))}

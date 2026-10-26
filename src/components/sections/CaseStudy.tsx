@@ -4,6 +4,7 @@ import { caseCategories, cases, type CaseCategoryId } from '@/data/landing';
 import { IconTile } from '@/components/ui/IconTile';
 import { ArrowButton } from '@/components/ui/ArrowButton';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
+import { cssVars } from '@/lib/css-vars';
 
 export default function CaseStudy() {
   const [activeCategory, setActiveCategory] = useState<CaseCategoryId>(
@@ -66,7 +67,7 @@ export default function CaseStudy() {
       aria-labelledby="case-heading"
     >
       <div className="case-study__inner">
-        <div className="case-study__heading-row">
+        <div className="case-study__heading-row" data-reveal>
           <div>
             <h2 className="section-title" id="case-heading">
               Кейсы
@@ -85,7 +86,7 @@ export default function CaseStudy() {
             </span>
           </a>
         </div>
-        <div className="case-study__filter">
+        <div className="case-study__filter" data-reveal>
           <span id="case-filter-label">Задача</span>
           <div
             className="chip-strip"
@@ -98,6 +99,7 @@ export default function CaseStudy() {
                 <button
                   className={`chip${selected ? ' chip--selected' : ''}`}
                   key={item.id}
+                  data-accent={item.accent}
                   ref={(node) => {
                     tabRefs.current[index] = node;
                   }}
@@ -116,7 +118,7 @@ export default function CaseStudy() {
             })}
           </div>
         </div>
-        <div className="case-study__examples">
+        <div className="case-study__examples" data-reveal>
           <span id="case-examples-label">
             {categoryCases.length > 1 ? 'Проекты' : 'Проект'}
           </span>
@@ -149,17 +151,22 @@ export default function CaseStudy() {
         <div
           className="case-study__body"
           id="case-panel"
+          data-reveal
           role="tabpanel"
           aria-labelledby={`case-tab-${category.id}`}
         >
-          <div className="benefits-panel">
+          <div className="benefits-panel" data-accent={category.accent}>
             <div className="benefits-panel__heading">
               <h3>{category.title}</h3>
               <p>{category.lead}</p>
             </div>
-            <div className="benefits-list">
+            <div className="benefits-list" key={category.id}>
               {category.benefits.map((item, index) => (
-                <div className="benefit-row" key={item.title}>
+                <div
+                  className="benefit-row"
+                  key={item.title}
+                  style={cssVars({ '--i': index })}
+                >
                   <IconTile>
                     <img
                       src={
@@ -196,10 +203,10 @@ export default function CaseStudy() {
               ) : null}
               <span className="case-visual__shade" />
             </div>
-            <div className="case-visual__meta">
+            <div className="case-visual__meta" key={category.id}>
               КЕЙС <span>•</span> {category.title.toLocaleUpperCase('ru-RU')}
             </div>
-            <div className="case-visual__copy">
+            <div className="case-visual__copy" key={current.id}>
               <header className="case-visual__head">
                 <h3>{current.brand}</h3>
                 <h4>{current.title}</h4>

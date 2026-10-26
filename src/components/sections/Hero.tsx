@@ -6,6 +6,7 @@ import {
 } from '@/data/landing';
 import { ArrowButton } from '@/components/ui/ArrowButton';
 import { HeroCarousel } from '@/components/sections/HeroCarousel';
+import { cssVars } from '@/lib/css-vars';
 
 export default function Hero() {
   return (
@@ -37,16 +38,24 @@ export default function Hero() {
           <div className="hero__audience">
             <span className="hero__audience-label">Для задач</span>
             <ul role="list">
-              {heroAudience.map((item) => (
-                <li key={item}>{item}</li>
+              {heroAudience.map((item, index) => (
+                <li
+                  key={item.label}
+                  data-accent={item.accent}
+                  style={cssVars({ '--i': index })}
+                >
+                  {item.label}
+                </li>
               ))}
             </ul>
           </div>
           <div className="hero__proof">
             <span className="hero__proof-label">{heroProof.label}</span>
             <ul role="list">
-              {heroProof.brands.map((brand) => (
-                <li key={brand}>{brand}</li>
+              {heroProof.brands.map((brand, index) => (
+                <li key={brand} style={cssVars({ '--i': index })}>
+                  {brand}
+                </li>
               ))}
             </ul>
           </div>

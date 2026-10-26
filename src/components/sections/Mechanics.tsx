@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
 import { mechanicsCatalog, mechanicsLead } from '@/data/landing';
 import { ArrowButton } from '@/components/ui/ArrowButton';
+import { cssVars } from '@/lib/css-vars';
 
 function iconForMechanic(icon: string) {
   return figmaAssets.mechanicIcons[
@@ -56,7 +57,7 @@ export default function Mechanics() {
       aria-labelledby="mechanics-heading"
     >
       <span className="mechanics__anchor" id="integrations" />
-      <div className="mechanics__heading">
+      <div className="mechanics__heading" data-reveal>
         <div>
           <h2 className="section-title" id="mechanics-heading">
             Механики и <span>возможности</span>
@@ -83,6 +84,10 @@ export default function Mechanics() {
               type="button"
               role="option"
               aria-selected={index === active}
+              data-accent={item.accent}
+              data-spot
+              data-reveal
+              style={cssVars({ '--i': index })}
               onClick={() => setActive(index)}
             >
               <span className="mechanic-card__top">
@@ -104,8 +109,10 @@ export default function Mechanics() {
         <aside
           className="mechanic-detail"
           aria-label={current.title}
+          data-accent={current.accent}
+          data-reveal
         >
-          <div className="mechanic-detail__head">
+          <div className="mechanic-detail__head" key={current.id}>
             <span className="mechanic-art mechanic-art--detail">
               <img
                 src={iconForMechanic(current.icon)}
@@ -122,9 +129,11 @@ export default function Mechanics() {
           </div>
           <div className="mechanic-detail__body">
             <span className="mechanic-detail__label">Возможности</span>
-            <ul>
-              {current.capabilities.map((item) => (
-                <li key={item}>{item}</li>
+            <ul key={current.id}>
+              {current.capabilities.map((item, index) => (
+                <li key={item} style={cssVars({ '--i': index })}>
+                  {item}
+                </li>
               ))}
             </ul>
             <ArrowButton href="#configurator" openContact>

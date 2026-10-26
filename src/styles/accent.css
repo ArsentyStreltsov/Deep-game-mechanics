@@ -1,0 +1,116 @@
+/* ───────────── Палитра задач ─────────────
+   У каждой задачи свой цвет: иконка карточки, свечение, точка в фильтре и на чипах, значок
+   в кейсах и конфигураторе. Цвета сняты с иконок (они сгенерированы одним набором) и подобраны так,
+   чтобы дружно смотреться на тёмном #0f0f10 рядом с фирменным кобальтом #0037c2.
+
+   Элемент получает цвет атрибутом data-accent="blue|violet|cyan|coral|amber|green";
+   всё остальное читает --accent (цвет) и --accent-rgb (для rgb(var(--accent-rgb) / .2)).
+   Без атрибута — ссылочный синий сайта. Подключается после clarity.css. */
+
+:root {
+  --c-blue: #3b73fc;
+  --c-violet: #936afa;
+  --c-cyan: #2fc8eb;
+  --c-coral: #fc667b;
+  --c-amber: #fdb63a;
+  --c-green: #7fdd6a;
+
+  --accent: var(--deep-link);
+  --accent-rgb: 108 149 255;
+}
+[data-accent='blue'] {
+  --accent: var(--c-blue);
+  --accent-rgb: 59 115 252;
+}
+[data-accent='violet'] {
+  --accent: var(--c-violet);
+  --accent-rgb: 147 106 250;
+}
+[data-accent='cyan'] {
+  --accent: var(--c-cyan);
+  --accent-rgb: 47 200 235;
+}
+[data-accent='coral'] {
+  --accent: var(--c-coral);
+  --accent-rgb: 252 102 123;
+}
+[data-accent='amber'] {
+  --accent: var(--c-amber);
+  --accent-rgb: 253 182 58;
+}
+[data-accent='green'] {
+  --accent: var(--c-green);
+  --accent-rgb: 127 221 106;
+}
+
+/* ───────────── Первый экран: цветные точки у задач ───────────── */
+.hero__audience li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    translate 200ms ease;
+}
+.hero__audience li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgb(var(--accent-rgb) / 0.7);
+}
+.hero__audience li:hover {
+  border-color: rgb(var(--accent-rgb) / 0.45);
+  translate: 0 -1px;
+}
+@media (max-width: 600px) {
+  .hero__audience li {
+    gap: 6px;
+  }
+}
+
+/* ───────────── Для кого ───────────── */
+.audience .audience-card__more {
+  color: var(--accent);
+}
+
+/* ───────────── Механики ───────────── */
+.mechanic-card:not(.is-active):hover {
+  border-color: rgb(var(--accent-rgb) / 0.4);
+  box-shadow: 0 16px 40px rgb(var(--accent-rgb) / 0.14);
+}
+.mechanic-detail[data-accent] .mechanic-detail__label {
+  color: var(--accent);
+}
+.mechanic-detail[data-accent] .mechanic-art--detail {
+  filter: drop-shadow(0 0 16px rgb(var(--accent-rgb) / 0.4));
+}
+
+/* ───────────── Как мы работаем: цвет номера шага ───────────── */
+.process-step__num {
+  color: var(--accent);
+  text-shadow: 0 0 22px rgb(var(--accent-rgb) / 0.35);
+}
+
+/* ───────────── Кейсы: точка в фильтре и значки преимуществ ───────────── */
+.chip[data-accent]::before {
+  background: var(--accent);
+  box-shadow: 0 0 8px rgb(var(--accent-rgb) / 0.6);
+}
+.chip--selected[data-accent]::before {
+  background: #fff;
+  box-shadow: none;
+}
+.benefits-panel[data-accent] .icon-tile,
+.builder-question[data-accent] .icon-tile {
+  border-color: rgb(var(--accent-rgb) / 0.38);
+  background: rgb(var(--accent-rgb) / 0.14);
+}
+.benefits-panel[data-accent] .icon-tile img,
+.builder-question[data-accent] .icon-tile img {
+  filter: brightness(0) invert(1)
+    drop-shadow(0 0 7px rgb(var(--accent-rgb) / 0.85));
+}

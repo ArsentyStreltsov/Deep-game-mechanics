@@ -1,7 +1,8 @@
 /* ───────────── Блок «Для кого мы собираем проекты» ─────────────
-   Карточка: текст слева (заголовок, короткая фраза, теги), справа — плоская иллюстрация.
-   Иллюстрации — прозрачные webp в кобальтовой палитре сайта (#0037c2 и светлее),
-   как значки услуг на deep-agency.ru, только крупнее.
+   Карточка: текст слева (заголовок, короткая фраза, теги), справа — минималистичная иконка.
+   Иконки — плоские глифы с мягким размытым краем и лёгким свечением (как значки услуг на
+   deep-agency.ru), у каждой задачи свой цвет из палитры accent.css: карточка читает его
+   из --accent / --accent-rgb (атрибут data-accent).
    Подключается после theme-deep.css; селекторы с .audience, чтобы перебить
    одиночные классы и медиазапросы из global.css. */
 
@@ -31,11 +32,11 @@
     background-color 180ms ease;
 }
 .audience .audience-card:hover {
-  border-color: var(--deep-border-2);
+  border-color: rgb(var(--accent-rgb) / 0.42);
   background: var(--deep-surface-2);
 }
 
-/* мягкое кобальтовое свечение за иллюстрацией */
+/* мягкое свечение в цвете задачи за иконкой */
 .audience .audience-card::before {
   content: '';
   position: absolute;
@@ -47,8 +48,8 @@
   transform: translate(30%, -50%);
   background: radial-gradient(
     closest-side,
-    rgba(0, 55, 194, 0.22),
-    rgba(0, 55, 194, 0.07) 58%,
+    rgb(var(--accent-rgb) / 0.2),
+    rgb(var(--accent-rgb) / 0.06) 58%,
     transparent
   );
   opacity: 0.85;
@@ -97,6 +98,10 @@
   font-weight: 350;
   line-height: 1.3;
   white-space: nowrap;
+  transition: border-color 200ms ease;
+}
+.audience .audience-card:hover .audience-card__tags li {
+  border-color: rgb(var(--accent-rgb) / 0.32);
 }
 
 .audience .audience-card__art {
@@ -106,10 +111,13 @@
   object-fit: contain;
   pointer-events: none;
   user-select: none;
-  transition: transform 360ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition:
+    transform 420ms cubic-bezier(0.3, 1.4, 0.5, 1),
+    filter 320ms ease;
 }
 .audience .audience-card:hover .audience-card__art {
-  transform: translateY(-4px) scale(1.04);
+  transform: scale(1.08) rotate(-3deg);
+  filter: drop-shadow(0 0 22px rgb(var(--accent-rgb) / 0.35));
 }
 
 /* ширина карточки меньше ~550px (планшет, телефон): заголовок и иллюстрация в одной строке,
