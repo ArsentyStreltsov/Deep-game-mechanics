@@ -31,9 +31,7 @@ export default function Hero() {
       <div className="hero__body">
         <div className="hero__content">
           <h1 id="hero-title">
-            <span>Игровые механики</span> для
-            <br />
-            команды — быстро
+            <span>Игровые механики</span> для команды — быстро
           </h1>
           <p>{heroSubtitle}</p>
           <div className="hero__actions">

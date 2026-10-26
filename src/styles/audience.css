@@ -1,0 +1,166 @@
+/* ───────────── Блок «Для кого мы собираем проекты» ─────────────
+   Карточка: текст слева (заголовок, короткая фраза, теги), справа — плоская иллюстрация.
+   Иллюстрации — прозрачные webp в кобальтовой палитре сайта (#0037c2 и светлее),
+   как значки услуг на deep-agency.ru, только крупнее.
+   Подключается после theme-deep.css; селекторы с .audience, чтобы перебить
+   одиночные классы и медиазапросы из global.css. */
+
+.audience .audience__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-height: 0;
+}
+
+.audience .audience-card {
+  --art: clamp(168px, 15.5vw, 224px);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--art);
+  align-items: center;
+  column-gap: 12px;
+  min-height: 0;
+  padding: 26px 8px 26px 34px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+  box-shadow: none;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.audience .audience-card:hover {
+  border-color: var(--deep-border-2);
+  background: var(--deep-surface-2);
+}
+
+/* мягкое кобальтовое свечение за иллюстрацией */
+.audience .audience-card::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: 0;
+  width: calc(var(--art) * 1.8);
+  aspect-ratio: 1;
+  transform: translate(30%, -50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(0, 55, 194, 0.22),
+    rgba(0, 55, 194, 0.07) 58%,
+    transparent
+  );
+  opacity: 0.85;
+  transition: opacity 240ms ease;
+  pointer-events: none;
+}
+.audience .audience-card:hover::before {
+  opacity: 1;
+}
+
+.audience .audience-card__body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.audience .audience-card h3 {
+  min-height: 0;
+  margin: 0;
+  color: var(--deep-text);
+  font: 400 clamp(21px, 1.75vw, 25px) / 1.15 var(--font-mono);
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.audience .audience-card p {
+  margin: 10px 0 0;
+  color: var(--deep-muted);
+  font-size: 15px;
+  font-weight: 350;
+  line-height: 1.45;
+}
+.audience .audience-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.audience .audience-card__tags li {
+  padding: 5px 11px 6px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 6px;
+  color: var(--deep-text-soft);
+  font-size: 13px;
+  font-weight: 350;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.audience .audience-card__art {
+  width: var(--art);
+  height: var(--art);
+  margin-block: -12px;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  transition: transform 360ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.audience .audience-card:hover .audience-card__art {
+  transform: translateY(-4px) scale(1.04);
+}
+
+/* ширина карточки меньше ~550px (планшет, телефон): заголовок и иллюстрация в одной строке,
+   ниже фраза и теги на всю ширину */
+@media (max-width: 1179px) {
+  .audience .audience-card {
+    --art: 116px;
+    grid-template-areas:
+      'title art'
+      'lead lead'
+      'tags tags';
+    padding: 20px 12px 22px 22px;
+  }
+  .audience .audience-card__body {
+    display: contents;
+  }
+  .audience .audience-card h3 {
+    grid-area: title;
+    font-size: 20px;
+  }
+  .audience .audience-card__art {
+    grid-area: art;
+    margin-block: -14px -10px;
+  }
+  .audience .audience-card p {
+    grid-area: lead;
+    margin-top: 4px;
+    padding-right: 10px;
+    font-size: 14px;
+  }
+  .audience .audience-card__tags {
+    grid-area: tags;
+    margin-top: 16px;
+    padding-right: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .audience .audience__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audience .audience-card,
+  .audience .audience-card::before,
+  .audience .audience-card__art {
+    transition: none;
+  }
+  .audience .audience-card:hover .audience-card__art {
+    transform: none;
+  }
+}
