@@ -102,7 +102,9 @@ export default function Configurator() {
     : 'сотрудников';
   const title = `${selectedTask} для ${participantCount} ${participantWord}`;
   const description = [
-    `Участники входят через корпоративный доступ и сразу попадают в персональный сценарий «${selectedTask}».`,
+    participantWord === 'участников'
+      ? `Участники сразу попадают в сценарий «${selectedTask}».`
+      : `Участники входят через корпоративный доступ и сразу попадают в персональный сценарий «${selectedTask}».`,
     modules.length
       ? `Внутри — ${modules.join(', ').toLocaleLowerCase('ru-RU')}, понятный прогресс и награды по ходу пути.`
       : 'Внутри — игровые механики, понятный прогресс и награды по ходу пути.',

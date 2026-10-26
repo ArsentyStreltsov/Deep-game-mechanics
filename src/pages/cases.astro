@@ -44,7 +44,18 @@ const pathname = Astro.url.pathname;
             item.categoryId;
           return (
             <article class={`cases-card cases-card--${item.artwork}`}>
-              <div class="cases-card__art" aria-hidden="true" />
+              <div class="cases-card__art" aria-hidden="true">
+                {item.cover && (
+                  <img
+                    src={item.cover}
+                    alt=""
+                    width="1536"
+                    height="1024"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
+              </div>
               <div class="cases-card__body">
                 <span>{category}</span>
                 <h2>
@@ -72,6 +83,6 @@ const pathname = Astro.url.pathname;
       </nav>
       <a class="site-footer__cta" href="/#configurator">Обсудить проект</a>
     </div>
-    <small>© {new Date().getFullYear()} Deep creative / digital</small>
+    <small>deep creative agency. Все права защищены</small>
   </footer>
 </BaseLayout>

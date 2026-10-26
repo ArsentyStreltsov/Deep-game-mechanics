@@ -9,58 +9,78 @@ export const navigation = [
 export const heroSubtitle =
   'Берём на себя разработку, дизайн и контент. Собираем проект на проверенной платформенной базе и докручиваем механику, сценарий и интеграции под вашу задачу';
 
-export const heroCards = [
+/**
+ * Карточки слайдера на первом экране. Каждая — одно конкретное обещание,
+ * подтверждённое разделами ниже по странице (механики, команды, аналитика).
+ * Переносы строк заданы вручную: заголовок — до ~12 знаков в строке
+ * (до ~15 при longTitle), подзаголовок — до ~26 знаков, иначе не влезет на мобильном.
+ */
+export type HeroCard = {
+  id: string;
+  title: string;
+  titleLines: readonly string[];
+  subtitle: string;
+  subtitleLines: readonly string[];
+  /** Иконка в плашке; для карточки-кольца (type: 'progress') кольцо рисуется само. */
+  icon: 'rocket' | 'gamepad' | 'users' | 'chart' | 'ring';
+  /** default — иконка и текст; progress — кольцо в центре; team — аватарки; stats — мини-график. */
+  type: 'default' | 'progress' | 'team' | 'stats';
+  /** type 'progress': подпись над значением в кольце. */
+  meta?: string;
+  /** type 'progress': значение в центре кольца (иллюстрация, не статистика). */
+  value?: string;
+  longTitle?: boolean;
+};
+
+export const heroCards: readonly HeroCard[] = [
   {
-    id: 'span',
-    title: 'От недели до полугода',
-    titleLines: ['От недели', 'до полугода'],
-    subtitle: 'От короткой кампании до постоянной платформы',
-    subtitleLines: ['От короткой кампании', 'до постоянной платформы'],
-    icon: 'span' as const,
-    type: 'timer' as const,
-    meta: 'Гибкий срок',
-  },
-  {
-    id: 'launch',
+    id: 'speed',
     title: 'Запуск от 1 недели',
-    titleLines: ['Запуск от 1', 'недели'],
-    subtitle: 'Проверенная база ускоряет разработку',
-    subtitleLines: ['Проверенная база', 'ускоряет разработку'],
-    icon: 'launch' as const,
-    type: 'default' as const,
+    titleLines: ['Запуск от', '1 недели'],
+    subtitle: 'Готовые модули вместо разработки с нуля',
+    subtitleLines: ['Готовые модули вместо', 'разработки с нуля'],
+    icon: 'rocket',
+    type: 'default',
   },
   {
-    id: 'progress',
-    title: 'Баллы, рейтинг и прогресс',
-    titleLines: ['Баллы, рейтинг и', 'прогресс'],
-    subtitle: 'Единая система мотивации участников',
-    subtitleLines: ['Единая система мотивации', 'участников'],
-    icon: 'progress' as const,
-    type: 'progress' as const,
-    meta: 'Единый контур',
+    id: 'games',
+    title: 'Игры под вашу задачу',
+    titleLines: ['Игры под', 'вашу задачу'],
+    subtitle: 'Квиз, колесо фортуны, memory — или своя механика',
+    subtitleLines: ['Квиз, колесо фортуны,', 'memory — или своя механика'],
+    icon: 'gamepad',
+    type: 'default',
   },
   {
-    id: 'cost',
-    title: 'Меньше затрат на активности',
-    titleLines: ['Меньше затрат', 'на активности'],
-    subtitle: 'Один инструмент',
-    subtitleLines: ['Один инструмент'],
-    icon: 'cost' as const,
-    type: 'team' as const,
-    meta: 'Один инструмент',
-    longTitle: true,
+    id: 'rewards',
+    title: 'Баллы, рейтинг и награды',
+    titleLines: ['Баллы, рейтинг', 'и награды'],
+    subtitle: 'Участники видят прогресс и обменивают баллы на призы',
+    subtitleLines: ['Участники видят прогресс', 'и обменивают баллы на призы'],
+    icon: 'ring',
+    type: 'progress',
+    meta: 'Баллы',
+    value: '+120',
   },
   {
-    id: 'team',
-    title: 'Нативный тимбилдинг',
-    titleLines: ['Нативный', 'тимбилдинг'],
-    subtitle: 'В рабочем сценарии',
-    subtitleLines: ['В рабочем сценарии'],
-    icon: 'team' as const,
-    type: 'team' as const,
-    meta: 'В рабочем сценарии',
+    id: 'teams',
+    title: 'Командные челленджи',
+    titleLines: ['Командные', 'челленджи'],
+    subtitle: 'Офисы и города соревнуются в общем зачёте',
+    subtitleLines: ['Офисы и города соревнуются', 'в общем зачёте'],
+    icon: 'users',
+    type: 'team',
   },
-] as const;
+  {
+    id: 'analytics',
+    title: 'Аналитика онлайн',
+    titleLines: ['Аналитика', 'онлайн'],
+    subtitle: 'Участники, задания и рейтинг в одной панели',
+    subtitleLines: ['Участники, задания', 'и рейтинг в одной панели'],
+    icon: 'chart',
+    type: 'stats',
+  },
+];
 
 /** @deprecated use heroCards */
 export const heroAdvantages = heroCards;
@@ -232,7 +252,7 @@ export const cases = [
       { value: '92%', label: 'положительных отзывов' },
     ],
     artwork: 'mts',
-    image: true,
+    cover: '/images/cases/mts-30.webp',
   },
   {
     id: 'tinkoff',
@@ -245,11 +265,11 @@ export const cases = [
     scale: 'Тысячи участников клуба',
     duration: 'Постоянная платформа',
     results: [
-      { value: 'Регулярный', label: 'ритм активностей' },
-      { value: 'Прозрачный', label: 'прогресс и статусы' },
+      { value: 'Уровни', label: 'доступа и статусы участников' },
+      { value: 'Витрина', label: 'наград и привилегий' },
     ],
     artwork: 'club',
-    image: false,
+    cover: '/images/cases/tinkoff.webp',
   },
   {
     id: 'mts-codyland',
@@ -263,10 +283,10 @@ export const cases = [
     duration: 'От подготовки до проведения события',
     results: [
       { value: 'Онлайн + офлайн', label: 'единый сценарий' },
-      { value: 'Понятный', label: 'прогресс участников' },
+      { value: 'Digital-слой', label: 'и активности на площадке' },
     ],
     artwork: 'event',
-    image: false,
+    cover: '/images/cases/mts-codyland.webp',
   },
   {
     id: 'megafon',
@@ -283,7 +303,7 @@ export const cases = [
       { value: 'Под бренд', label: 'сценарий и визуал' },
     ],
     artwork: 'promo',
-    image: false,
+    cover: '/images/cases/megafon.webp',
   },
   {
     id: 'zewa',
@@ -296,11 +316,11 @@ export const cases = [
     scale: 'Федеральная трейд-кампания',
     duration: 'Промо-период',
     results: [
-      { value: 'Чеки', label: 'и участие в одной логике' },
-      { value: 'Контроль', label: 'кампании прозрачен' },
+      { value: 'Чеки', label: 'и баллы в одной механике' },
+      { value: 'Призовой фонд', label: 'и проверка покупок' },
     ],
     artwork: 'referral',
-    image: false,
+    cover: '/images/cases/zewa.webp',
   },
   {
     id: 'headhunter',
@@ -317,7 +337,7 @@ export const cases = [
       { value: 'Под задачу', label: 'механика и визуал' },
     ],
     artwork: 'promo',
-    image: false,
+    cover: '/images/cases/headhunter.webp',
   },
   {
     id: 'telegram-bots',
@@ -331,10 +351,10 @@ export const cases = [
     duration: 'От короткой активации до серии активностей',
     results: [
       { value: 'QR + баллы', label: 'в одном контуре' },
-      { value: 'Без лишнего', label: 'отдельного сайта' },
+      { value: 'Задания', label: 'и начисление баллов' },
     ],
     artwork: 'bot',
-    image: false,
+    cover: '/images/cases/telegram-bots.webp',
   },
 ] as const;
 
@@ -365,7 +385,7 @@ export const mechanicsCatalog = [
       'Уникальный визуал и контент под бренд',
       'Связка с рейтингом, наградами и интеграциями',
     ],
-    icon: 'challenge',
+    icon: 'blocks',
   },
   {
     id: 'integrations',
@@ -386,7 +406,7 @@ export const mechanicsCatalog = [
       'API клиента',
       'Webhooks',
     ],
-    icon: 'catch',
+    icon: 'plug',
   },
   {
     id: 'teams',
@@ -399,7 +419,7 @@ export const mechanicsCatalog = [
       'Челленджи на время, очки и совместный прогресс',
       'Сценарии для офисов, городов и подразделений',
     ],
-    icon: 'challenge',
+    icon: 'trophy',
   },
   {
     id: 'learning',
@@ -414,7 +434,7 @@ export const mechanicsCatalog = [
       'Баллы, уровни и прогресс по программе',
       'Связка с корпоративными системами при наличии доступа',
     ],
-    icon: 'collection',
+    icon: 'learning',
   },
   {
     id: 'shop',
@@ -427,7 +447,7 @@ export const mechanicsCatalog = [
       'Лимиты, роли и статусы доступа',
       'Учёт выдачи и остатков',
     ],
-    icon: 'shop',
+    icon: 'gift',
   },
   {
     id: 'live',
@@ -440,7 +460,7 @@ export const mechanicsCatalog = [
       'Квизы и голосования во время эфира',
       'Общий рейтинг по итогам стрима',
     ],
-    icon: 'poll',
+    icon: 'video',
   },
   {
     id: 'receipts',
@@ -453,7 +473,7 @@ export const mechanicsCatalog = [
       'Связка покупки с баллами и призами',
       'Контроль кампании и антифрод-сценарии',
     ],
-    icon: 'clicker',
+    icon: 'receipt',
   },
 ] as const;
 

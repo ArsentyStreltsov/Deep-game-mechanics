@@ -5,7 +5,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import { heroCards } from '@/data/landing';
+import { heroCards, type HeroCard } from '@/data/landing';
 
 const BASE_WIDTH = 2048;
 const BASE_HEIGHT = 567;
@@ -16,7 +16,7 @@ const INITIAL_ACTIVE = 2;
 const SWIPE_THRESHOLD = 56;
 const AUTOPLAY_MS = 4200;
 
-type Card = (typeof heroCards)[number];
+type Card = HeroCard;
 type IconName = Card['icon'];
 
 function wrapOffset(index: number, active: number) {
@@ -25,7 +25,7 @@ function wrapOffset(index: number, active: number) {
 
 function CoverflowIcon({ name }: { name: IconName }) {
   switch (name) {
-    case 'span':
+    case 'rocket':
       return (
         <svg aria-hidden="true" fill="none" viewBox="0 0 48 48">
           <path
@@ -39,7 +39,7 @@ function CoverflowIcon({ name }: { name: IconName }) {
           />
         </svg>
       );
-    case 'launch':
+    case 'gamepad':
       return (
         <svg aria-hidden="true" fill="none" viewBox="0 0 48 48">
           <path
@@ -56,19 +56,23 @@ function CoverflowIcon({ name }: { name: IconName }) {
           <circle cx="35" cy="25" fill="white" r="2.5" />
         </svg>
       );
-    case 'cost':
+    case 'users':
       return (
         <svg aria-hidden="true" fill="none" viewBox="0 0 48 48">
+          <circle cx="35.5" cy="18.5" fill="currentColor" opacity="0.5" r="5.5" />
           <path
-            d="m24 6 5.7 11.7 13 1.8-9.4 9.1 2.3 12.8L24 35.3 12.4 41.4l2.2-12.8-9.3-9.1 13-1.8L24 6Z"
+            d="M27 40v-2c0-6.5 3.6-11.4 9-11.4 5.4 0 8 4.3 8 10.4V40H27Z"
             fill="currentColor"
-            stroke="currentColor"
-            strokeLinejoin="round"
-            strokeWidth="3"
+            opacity="0.5"
+          />
+          <circle cx="19" cy="17" fill="currentColor" r="7" />
+          <path
+            d="M5 39c0-7.7 6.3-13 14-13s14 5.3 14 13v1H5v-1Z"
+            fill="currentColor"
           />
         </svg>
       );
-    case 'team':
+    case 'chart':
       return (
         <svg aria-hidden="true" fill="none" viewBox="0 0 48 48">
           <rect fill="currentColor" height="32" rx="8" width="32" x="8" y="8" />
@@ -122,6 +126,18 @@ function Avatars() {
   );
 }
 
+const STAT_BARS = [34, 52, 44, 68, 58, 82, 100] as const;
+
+function MiniBars() {
+  return (
+    <div className="coverflow__bars" aria-hidden="true">
+      {STAT_BARS.map((height, index) => (
+        <span key={index} style={{ height: `${height}%` }} />
+      ))}
+    </div>
+  );
+}
+
 function CoverflowCard({
   card,
   offset,
@@ -165,7 +181,11 @@ function CoverflowCard({
               />
             </svg>
             <div className="coverflow__ring-label">{card.meta}</div>
-            <div className="coverflow__ring-value">+</div>
+            <div
+              className={`coverflow__ring-value${(card.value ?? '').length > 3 ? ' coverflow__ring-value--wide' : ''}`}
+            >
+              {card.value}
+            </div>
           </div>
           <div className="coverflow__info">
             <h2 className="coverflow__center-title">
@@ -184,13 +204,11 @@ function CoverflowCard({
           <div className="coverflow__icon">
             <CoverflowIcon name={card.icon} />
           </div>
-          <TitleLines lines={card.titleLines} long={'longTitle' in card && card.longTitle} />
+          <TitleLines lines={card.titleLines} long={card.longTitle} />
           <div className="coverflow__info">
-            {card.type === 'timer' && card.meta ? (
-              <div className="coverflow__micro">{card.meta}</div>
-            ) : null}
             <SubLines lines={card.subtitleLines} />
             {card.type === 'team' ? <Avatars /> : null}
+            {card.type === 'stats' ? <MiniBars /> : null}
           </div>
         </>
       )}
@@ -369,7 +387,7 @@ export function HeroCarousel() {
         ref={sceneRef}
         role="region"
         aria-roledescription="carousel"
-        aria-label="Карусель преимуществ платформы"
+        aria-label="Карусель возможностей платформы"
       >
         <div className="coverflow__space">
           {heroCards.map((card, index) => (

@@ -98,10 +98,21 @@ export default function CaseStudy() {
             </div>
           </div>
           <article
-            className={`case-visual case-visual--${current.artwork}`}
+            className={`case-visual case-visual--${current.artwork}${current.cover ? ' case-visual--cover' : ''}`}
             aria-label={`Пример: ${current.brand} — ${current.title}`}
           >
             <div className="case-visual__art" aria-hidden="true">
+              {current.cover ? (
+                <img
+                  className="case-visual__image"
+                  key={current.id}
+                  src={current.cover}
+                  alt=""
+                  width={1536}
+                  height={1024}
+                  decoding="async"
+                />
+              ) : null}
               <span className="case-visual__shade" />
             </div>
             <div className="case-visual__meta">

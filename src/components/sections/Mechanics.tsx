@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
 import { mechanicsCatalog } from '@/data/landing';
-import { IconTile } from '@/components/ui/IconTile';
 import { ArrowButton } from '@/components/ui/ArrowButton';
 
 function iconForMechanic(icon: string) {
@@ -90,9 +89,15 @@ export default function Mechanics() {
               onClick={() => setActive(index)}
             >
               <span className="mechanic-card__top">
-                <IconTile>
-                  <img src={iconForMechanic(item.icon)} alt="" />
-                </IconTile>
+                <span className="mechanic-art">
+                  <img
+                    src={iconForMechanic(item.icon)}
+                    alt=""
+                    width={256}
+                    height={256}
+                    decoding="async"
+                  />
+                </span>
               </span>
               <strong>{item.title}</strong>
               <span className="mechanic-card__description">{item.summary}</span>
@@ -104,9 +109,15 @@ export default function Mechanics() {
           aria-label={current.title}
         >
           <div className="mechanic-detail__head">
-            <IconTile>
-              <img src={iconForMechanic(current.icon)} alt="" />
-            </IconTile>
+            <span className="mechanic-art mechanic-art--detail">
+              <img
+                src={iconForMechanic(current.icon)}
+                alt=""
+                width={256}
+                height={256}
+                decoding="async"
+              />
+            </span>
             <div>
               <h3>{current.title}</h3>
               <p>{current.description}</p>
