@@ -1,4 +1,8 @@
-import { audienceCards, audienceHeading } from '@/data/landing';
+import {
+  audienceCards,
+  audienceHeading,
+  featuredCaseForCategory,
+} from '@/data/landing';
 import { IconTile } from '@/components/ui/IconTile';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
 
@@ -16,30 +20,67 @@ export default function Audience() {
         <p className="section-lead">{audienceHeading.lead}</p>
       </div>
       <div className="audience__grid">
-        {audienceCards.map((item) => (
-          <article className="audience-card" key={item.id}>
-            <div className="audience-card__body">
-              <h3>{item.title}</h3>
-              <p>{item.lead}</p>
-              <ul className="audience-card__tags" role="list">
-                {item.tags.map((tag) => (
-                  <li key={tag}>{tag}</li>
-                ))}
-              </ul>
-            </div>
-            <img
-              className="audience-card__art"
-              src={item.image}
-              alt=""
-              width={640}
-              height={640}
-              loading="lazy"
-              decoding="async"
-            />
-          </article>
-        ))}
+        {audienceCards.map((item) => {
+          const example = item.categoryId
+            ? featuredCaseForCategory(item.categoryId)
+            : null;
+          const more = example
+            ? `Кейс: ${example.brand} · ${example.title}`
+            : 'Обсудить задачу';
+          return (
+            <article className="audience-card" key={item.id}>
+              <div className="audience-card__body">
+                <h3>
+                  {example ? (
+                    <a
+                      className="audience-card__link"
+                      href="#cases"
+                      data-case-category={item.categoryId}
+                      aria-label={`${item.title} — ${more.toLocaleLowerCase('ru-RU')}`}
+                    >
+                      {item.title}
+                    </a>
+                  ) : (
+                    <a
+                      className="audience-card__link"
+                      href="#configurator"
+                      data-open-contact
+                      aria-label={`${item.title} — ${more.toLocaleLowerCase('ru-RU')}`}
+                    >
+                      {item.title}
+                    </a>
+                  )}
+                </h3>
+                <p>{item.lead}</p>
+                <ul className="audience-card__tags" role="list">
+                  {item.tags.map((tag) => (
+                    <li key={tag}>{tag}</li>
+                  ))}
+                </ul>
+                <span className="audience-card__more" aria-hidden="true">
+                  {more}
+                  <ArrowIcon direction="right" />
+                </span>
+              </div>
+              <img
+                className="audience-card__art"
+                src={item.image}
+                alt=""
+                width={640}
+                height={640}
+                loading="lazy"
+                decoding="async"
+              />
+            </article>
+          );
+        })}
       </div>
-      <a className="telegram-banner" href="#configurator">
+      <a
+        className="telegram-banner"
+        href="#cases"
+        data-case-category="events"
+        data-case-id="telegram-bots"
+      >
         <IconTile>
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path

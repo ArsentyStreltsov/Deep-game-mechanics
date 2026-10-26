@@ -1,0 +1,42 @@
+---
+import { processSection } from '@/data/landing';
+
+const { title, accent, lead, steps, includedTitle, included } = processSection;
+---
+
+<section
+  class="process section-shell"
+  id="process"
+  aria-labelledby="process-heading"
+>
+  <div class="process__heading">
+    <h2 class="section-title" id="process-heading">
+      {title} <span>{accent}</span>
+    </h2>
+    <p class="section-lead">{lead}</p>
+  </div>
+  <ol class="process__steps">
+    {steps.map((step, index) => (
+      <li class="process-step">
+        <span class="process-step__num" aria-hidden="true">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <h3>{step.title}</h3>
+        <p>{step.text}</p>
+      </li>
+    ))}
+  </ol>
+  <div class="process__included">
+    <h3>{includedTitle}</h3>
+    <ul role="list">
+      {included.map((item) => (
+        <li>
+          <a href={item.href}>
+            <strong>{item.title}</strong>
+            <span>{item.text}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

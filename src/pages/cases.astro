@@ -27,7 +27,7 @@ const pathname = Astro.url.pathname;
           ))
         }
       </nav>
-      <a class="brief-button" href="/#configurator">Отправить бриф</a>
+      <a class="brief-button" href="/#configurator">Обсудить проект</a>
     </header>
     <section class="cases-page__intro section-shell">
       <h1 class="section-title">Все <span>кейсы</span></h1>
@@ -62,6 +62,11 @@ const pathname = Astro.url.pathname;
                   {item.brand} — {item.title}
                 </h2>
                 <p>{item.description}</p>
+                <ul class="cases-card__tags" role="list">
+                  {item.mechanics.map((tag) => (
+                    <li>{tag}</li>
+                  ))}
+                </ul>
               </div>
             </article>
           );

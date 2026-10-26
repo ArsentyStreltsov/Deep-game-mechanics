@@ -1,28 +1,34 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import SiteHeader from '@/components/sections/SiteHeader';
 import Hero from '@/components/sections/Hero';
 import Audience from '@/components/sections/Audience';
-import CaseStudy from '@/components/sections/CaseStudy';
 import Mechanics from '@/components/sections/Mechanics';
+import HowItWorks from '@/components/sections/HowItWorks.astro';
+import CaseStudy from '@/components/sections/CaseStudy';
 import Configurator from '@/components/sections/Configurator';
 import Analytics from '@/components/sections/Analytics';
 import FAQ from '@/components/sections/FAQ';
+import FinalCta from '@/components/sections/FinalCta.astro';
 import { BrandMark } from '@/components/ui/BrandMark';
 import { navigation } from '@/data/landing';
 ---
 
 <BaseLayout
-  title="Deep — игровые механики для команды"
-  description="Игровые механики, спецпроекты и цифровые платформы для сотрудников и клиентов."
+  title="Deep — игровые механики для HR и маркетинга"
+  description="Игровые механики и платформы для сотрудников, клиентов и покупателей: HR и внутриком, мероприятия, лояльность, спецпроекты, трейд-маркетинг. Разработка, дизайн и контент под ключ."
 >
+  <SiteHeader client:load />
   <main class="landing-page">
     <Hero client:load />
     <Audience client:load />
-    <CaseStudy client:load />
     <Mechanics client:load />
+    <HowItWorks />
+    <CaseStudy client:load />
     <Configurator client:load />
     <Analytics client:load />
     <FAQ client:load />
+    <FinalCta />
   </main>
   <footer class="site-footer">
     <div class="site-footer__bar">
@@ -40,7 +46,9 @@ import { navigation } from '@/data/landing';
           ))
         }
       </nav>
-      <a class="site-footer__cta" href="#configurator">Обсудить проект</a>
+      <a class="site-footer__cta" href="#configurator" data-open-contact
+        >Обсудить проект</a
+      >
     </div>
     <small>deep creative agency. Все права защищены</small>
   </footer>

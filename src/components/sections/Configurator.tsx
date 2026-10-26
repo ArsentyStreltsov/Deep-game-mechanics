@@ -3,17 +3,18 @@ import { figmaAssets } from '@/lib/figma-assets';
 import { IconTile } from '@/components/ui/IconTile';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
 
+/** Названия задач совпадают с блоком «Для кого» и разделом «Кейсы». */
 const questions = [
   {
     title: 'Какая задача?',
     options: [
-      'Офлайн-мероприятие',
       'Онбординг',
       'Обучение',
-      'Вовлечение',
-      'Интерактивный спецпроект',
+      'Вовлечение команды',
+      'Клуб и лояльность',
+      'Мероприятие',
       'Внешний спецпроект',
-      'Отдельная платформа',
+      'Трейд-маркетинг',
       'Реферальная программа',
       'Другое',
     ],
@@ -27,12 +28,14 @@ const questions = [
     options: [
       'Игры',
       'Задания',
-      'Live',
+      'Прямой эфир',
       'Команды',
       'Рейтинг',
       'Награды',
+      'Мерч-шоп',
+      'Проверка чеков',
       'Пользовательский контент',
-      'Telegram / бот-webapp',
+      'Telegram-бот с web app',
     ],
   },
   {
@@ -42,12 +45,22 @@ const questions = [
       'HR-система',
       'SSO',
       'LMS',
+      'CRM',
       'Корпоративный портал',
       'Несколько систем',
     ],
   },
 ];
-const defaultSelection = [1, 1, [1, 2], 0] as const;
+const defaultSelection = [0, 1, [0, 1], 0] as const;
+
+/** Задачи, где участники — не сотрудники: меняет слово в заголовке примера. */
+const externalTasks = [
+  'Клуб и лояльность',
+  'Мероприятие',
+  'Внешний спецпроект',
+  'Трейд-маркетинг',
+  'Реферальная программа',
+];
 
 type DiscussForm = {
   name: string;
@@ -64,6 +77,7 @@ const emptyForm: DiscussForm = {
 export default function Configurator() {
   const [submitted, setSubmitted] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [touched, setTouched] = useState(false);
   const [form, setForm] = useState<DiscussForm>(emptyForm);
   const [errors, setErrors] = useState<Partial<Record<keyof DiscussForm, string>>>(
     {},
@@ -94,10 +108,7 @@ export default function Configurator() {
         : audience === '2 000 – 10 000'
           ? '5 000'
           : '10 000+';
-  const participantWord = [
-    'Внешний спецпроект',
-    'Реферальная программа',
-  ].includes(selectedTask)
+  const participantWord = externalTasks.includes(selectedTask)
     ? 'участников'
     : 'сотрудников';
   const title = `${selectedTask} для ${participantCount} ${participantWord}`;
@@ -115,6 +126,7 @@ export default function Configurator() {
 
   function toggle(questionIndex: number, optionIndex: number) {
     setSubmitted(false);
+    setTouched(true);
     setSelection((current) =>
       current.map((items, index) => {
         if (index !== questionIndex) return items;
@@ -159,6 +171,31 @@ export default function Configurator() {
     setForm(emptyForm);
   }
 
+  // Любая кнопка «Обсудить проект» на странице (шапка, hero, кейсы, подвал…) открывает форму.
+  // Без JS такая ссылка просто прокручивает к этому разделу.
+  useEffect(() => {
+    function onClick(event: MouseEvent) {
+      const trigger = (event.target as Element | null)?.closest?.(
+        '[data-open-contact]',
+      );
+      if (
+        !trigger ||
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+      event.preventDefault();
+      openModal();
+    }
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
+
   useEffect(() => {
     if (!modalOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -188,9 +225,10 @@ export default function Configurator() {
             <span>Соберите пример</span> своего проекта
           </h2>
           <p>
-            Выберите задачу, масштаб и модули — покажем возможный сценарий.
-            Готовые модули ускоряют запуск, а<br className="desktop-break" />{' '}
-            дизайн, контент и пользовательский путь остаются вашими.
+            Выберите задачу, масштаб и модули — покажем, как мог бы выглядеть
+            ваш проект. Готовые модули ускоряют запуск, а
+            <br className="desktop-break" /> дизайн, контент и сценарий мы
+            делаем под вас.
           </p>
         </header>
         <div className="configurator__columns">
@@ -251,7 +289,7 @@ export default function Configurator() {
               <div>
                 <b aria-hidden="true">▦</b>
                 <span>
-                  Примерный срок разработки
+                  Ориентир по сроку
                   <strong>
                     {audience === 'до 500'
                       ? '1 – 2 месяца'
@@ -271,6 +309,10 @@ export default function Configurator() {
                 </span>
               </div>
             </div>
+            <p className="project-summary__note">
+              Срок ориентировочный: на готовых модулях без кастома запускаем
+              быстрее — от 1 недели. Точный срок назовём после брифа.
+            </p>
             <div className="project-summary__cta">
               {submitted ? (
                 <div
@@ -326,7 +368,7 @@ export default function Configurator() {
             </button>
             <span className="discuss-modal__eyebrow">Задача</span>
             <h3 id="discuss-modal-title">Расскажите, что хотите запустить</h3>
-            <p className="discuss-modal__context">{title}</p>
+            {touched && <p className="discuss-modal__context">{title}</p>}
             <form className="discuss-modal__form" onSubmit={handleSubmit} noValidate>
               <label className="discuss-field">
                 <span>

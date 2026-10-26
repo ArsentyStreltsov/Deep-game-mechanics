@@ -372,7 +372,6 @@ function CustomUi() {
             <Glyph name="check" />
           </span>
           {row}
-          <em>под вас</em>
         </li>
       ))}
       <li className="ui-checks__idea">
@@ -493,7 +492,7 @@ function AnalyticsUi() {
           <strong>8 430</strong>
         </div>
         <div className="ui-kpi">
-          <small>Participation rate</small>
+          <small>Доля участвующих</small>
           <strong>74%</strong>
         </div>
       </div>

@@ -1,10 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
-import {
-  caseCategories,
-  featuredCaseForCategory,
-  type CaseCategoryId,
-} from '@/data/landing';
+import { caseCategories, cases, type CaseCategoryId } from '@/data/landing';
 import { IconTile } from '@/components/ui/IconTile';
 import { ArrowButton } from '@/components/ui/ArrowButton';
 import { ArrowIcon } from '@/components/ui/ArrowIcon';
@@ -13,16 +9,55 @@ export default function CaseStudy() {
   const [activeCategory, setActiveCategory] = useState<CaseCategoryId>(
     caseCategories[0].id,
   );
+  const [activeCaseId, setActiveCaseId] = useState('');
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const category =
     caseCategories.find((item) => item.id === activeCategory) ??
     caseCategories[0];
-  const current = useMemo(
-    () => featuredCaseForCategory(activeCategory),
-    [activeCategory],
+  const categoryCases = cases.filter(
+    (item) => item.categoryId === category.id,
   );
-  const categoryLabel =
-    caseCategories.find((item) => item.id === current.categoryId)?.title ??
-    current.categoryId;
+  const current =
+    categoryCases.find((item) => item.id === activeCaseId) ?? categoryCases[0];
+
+  function selectCategory(id: CaseCategoryId) {
+    setActiveCategory(id);
+    setActiveCaseId('');
+  }
+
+  // Карточки блока «Для кого» и баннер Telegram открывают нужную задачу (и проект) в этом разделе.
+  useEffect(() => {
+    function onClick(event: MouseEvent) {
+      const trigger = (event.target as Element | null)?.closest?.(
+        '[data-case-category]',
+      );
+      const id = trigger?.getAttribute('data-case-category');
+      const category = caseCategories.find((item) => item.id === id);
+      if (!trigger || !category) return;
+      setActiveCategory(category.id);
+      setActiveCaseId(trigger.getAttribute('data-case-id') ?? '');
+    }
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
+
+  function onTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const last = caseCategories.length - 1;
+    const next =
+      event.key === 'ArrowRight'
+        ? (index + 1) % caseCategories.length
+        : event.key === 'ArrowLeft'
+          ? (index - 1 + caseCategories.length) % caseCategories.length
+          : event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? last
+              : -1;
+    if (next < 0) return;
+    event.preventDefault();
+    selectCategory(caseCategories[next].id);
+    tabRefs.current[next]?.focus();
+  }
 
   return (
     <section
@@ -34,13 +69,13 @@ export default function CaseStudy() {
         <div className="case-study__heading-row">
           <div>
             <h2 className="section-title" id="case-heading">
-              От одной механики
+              Кейсы
               <br />
-              до <span>отдельной платформы</span>
+              <span>по задачам</span>
             </h2>
             <p className="section-lead">
-              Выберите тип проекта — покажем, что он даёт участникам и как может
-              выглядеть решение.
+              Выберите задачу — покажем похожий проект: что получили
+              участники и из чего он собран.
             </p>
           </div>
           <a className="compact-cta" href="/cases">
@@ -51,30 +86,76 @@ export default function CaseStudy() {
           </a>
         </div>
         <div className="case-study__filter">
-          <span>Для кого</span>
-          <div className="chip-strip" role="tablist" aria-label="Тип проекта">
-            {caseCategories.map((item) => (
-              <button
-                className={`chip${item.id === activeCategory ? ' chip--selected' : ''}`}
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={item.id === activeCategory}
-                onClick={() => setActiveCategory(item.id)}
-              >
-                {item.title}
-              </button>
-            ))}
+          <span id="case-filter-label">Задача</span>
+          <div
+            className="chip-strip"
+            role="tablist"
+            aria-labelledby="case-filter-label"
+          >
+            {caseCategories.map((item, index) => {
+              const selected = item.id === activeCategory;
+              return (
+                <button
+                  className={`chip${selected ? ' chip--selected' : ''}`}
+                  key={item.id}
+                  ref={(node) => {
+                    tabRefs.current[index] = node;
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`case-tab-${item.id}`}
+                  aria-selected={selected}
+                  aria-controls="case-panel"
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => selectCategory(item.id)}
+                  onKeyDown={(event) => onTabKeyDown(event, index)}
+                >
+                  {item.title}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="case-study__body">
+        <div className="case-study__examples">
+          <span id="case-examples-label">
+            {categoryCases.length > 1 ? 'Проекты' : 'Проект'}
+          </span>
+          <div
+            className="case-switch"
+            role="group"
+            aria-labelledby="case-examples-label"
+          >
+            {categoryCases.map((item) =>
+              categoryCases.length > 1 ? (
+                <button
+                  className={`case-switch__item${item.id === current.id ? ' is-active' : ''}`}
+                  key={item.id}
+                  type="button"
+                  aria-pressed={item.id === current.id}
+                  onClick={() => setActiveCaseId(item.id)}
+                >
+                  <b>{item.brand}</b>
+                  {item.title}
+                </button>
+              ) : (
+                <span className="case-switch__item is-active" key={item.id}>
+                  <b>{item.brand}</b>
+                  {item.title}
+                </span>
+              ),
+            )}
+          </div>
+        </div>
+        <div
+          className="case-study__body"
+          id="case-panel"
+          role="tabpanel"
+          aria-labelledby={`case-tab-${category.id}`}
+        >
           <div className="benefits-panel">
             <div className="benefits-panel__heading">
               <h3>{category.title}</h3>
-              <p>
-                Собираем сценарий, контент и интеграции под задачу — на
-                проверенной платформенной базе.
-              </p>
+              <p>{category.lead}</p>
             </div>
             <div className="benefits-list">
               {category.benefits.map((item, index) => (
@@ -116,7 +197,7 @@ export default function CaseStudy() {
               <span className="case-visual__shade" />
             </div>
             <div className="case-visual__meta">
-              КЕЙС <span>•</span> {categoryLabel.toLocaleUpperCase('ru-RU')}
+              КЕЙС <span>•</span> {category.title.toLocaleUpperCase('ru-RU')}
             </div>
             <div className="case-visual__copy">
               <header className="case-visual__head">
@@ -152,7 +233,9 @@ export default function CaseStudy() {
               </div>
             </div>
             <div className="case-visual__cta">
-              <ArrowButton href="#configurator">Хочу узнать подробнее</ArrowButton>
+              <ArrowButton href="#configurator" openContact>
+                Обсудить такой проект
+              </ArrowButton>
             </div>
           </article>
         </div>

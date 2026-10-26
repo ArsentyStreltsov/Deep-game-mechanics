@@ -1,0 +1,37 @@
+---
+import { finalCta } from '@/data/landing';
+import { ArrowIcon } from '@/components/ui/ArrowIcon';
+---
+
+<section
+  class="final-cta section-shell"
+  id="contact"
+  aria-labelledby="final-cta-heading"
+>
+  <div class="final-cta__inner">
+    <img
+      class="final-cta__art"
+      src="/images/audience/game.webp"
+      alt=""
+      width="640"
+      height="640"
+      loading="lazy"
+      decoding="async"
+    />
+    <h2 id="final-cta-heading">
+      {finalCta.title} <span>{finalCta.accent}</span>
+    </h2>
+    <p>{finalCta.text}</p>
+    <div class="final-cta__actions">
+      <a class="arrow-button" href="#configurator" data-open-contact>
+        <span>{finalCta.primary}</span>
+        <span aria-hidden="true" class="arrow-button__icon">
+          <ArrowIcon className="arrow-button__arrow" />
+        </span>
+      </a>
+      <a class="final-cta__ghost" href="#configurator">
+        {finalCta.secondary}
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
-import { mechanicsCatalog } from '@/data/landing';
+import { mechanicsCatalog, mechanicsLead } from '@/data/landing';
 import { ArrowButton } from '@/components/ui/ArrowButton';
 
 function iconForMechanic(icon: string) {
@@ -61,10 +61,7 @@ export default function Mechanics() {
           <h2 className="section-title" id="mechanics-heading">
             Механики и <span>возможности</span>
           </h2>
-          <p className="section-lead">
-            Короткий набор того, что можно собрать в проекте. Узнайте свою
-            задачу — сценарий, контент и интеграции докрутим под неё.
-          </p>
+          <p className="section-lead">{mechanicsLead}</p>
         </div>
         <img
           className="mechanics__decoration"
@@ -130,7 +127,9 @@ export default function Mechanics() {
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            <ArrowButton href="#configurator">Обсудить эту возможность</ArrowButton>
+            <ArrowButton href="#configurator" openContact>
+              Обсудить эту возможность
+            </ArrowButton>
           </div>
         </aside>
       </div>

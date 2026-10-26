@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
 import { IconTile } from '@/components/ui/IconTile';
 
+/** Названия задач — те же, что в блоке «Для кого» и в разделе «Кейсы». */
 const scenarios = [
-  'Внутриком',
-  'Офлайн-ивент',
-  'Обучение',
-  'Внешний спецпроект',
-  'Мерч-шоп',
+  'HR и внутриком',
+  'Мероприятия',
+  'Лояльность и клубы',
+  'Спецпроекты',
+  'Трейд-маркетинг',
 ];
 const periods = [
   { id: '7', label: 'За последние 7 дней', bars: [350, 520, 790, 170, 690, 420, 260] },
@@ -23,7 +24,7 @@ const kpis = [
     trend: 'M0 48 C20 34 28 42 43 37 S59 14 76 12 S93 15 100 0',
   },
   {
-    label: 'Participation rate',
+    label: 'Доля участвующих',
     value: '74%',
     delta: '-0,2%',
     positive: false,
@@ -67,7 +68,11 @@ export default function Analytics() {
   const period = periods[periodIndex];
 
   return (
-    <section className="analytics" aria-labelledby="analytics-heading">
+    <section
+      className="analytics"
+      id="analytics"
+      aria-labelledby="analytics-heading"
+    >
       <div className="analytics__inner">
         <header className="analytics__heading">
           <h2 id="analytics-heading">
@@ -76,10 +81,10 @@ export default function Analytics() {
           <p>
             Предоставляем постоянный доступ к ключевым показателям на всём
             протяжении проекта. Панель адаптируем под ваш сценарий.
-            <br />
-            Демонстрационные показатели. Не являются результатами реального
-            проекта
           </p>
+          <span className="analytics__demo">
+            Демо-данные — не результаты реального проекта
+          </span>
         </header>
         <nav className="scenario-tabs" aria-label="Сценарии аналитики">
           {scenarios.map((name, i) => (
@@ -101,7 +106,7 @@ export default function Analytics() {
                 <span className="kpi-card__label">{item.label}</span>
                 <div className="kpi-card__line">
                   <strong>
-                    {item.label === 'Participation rate' ||
+                    {item.label === 'Доля участвующих' ||
                     item.label === 'Активностей на участника'
                       ? item.value
                       : Math.round(
