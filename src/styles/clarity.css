@@ -1,0 +1,663 @@
+/* ───────────── Ясность оффера и навигации ─────────────
+   Всё, что добавлено при правке «понятно ли, что мы продаём»: липкая шапка с меню-бургером,
+   строка «для задач» и клиенты в hero, ссылки-карточки «Для кого», переключатель проектов
+   в кейсах, блоки «Как мы работаем» и финальный призыв, пометки в конфигураторе и аналитике.
+   Подключается последним — переопределяет global.css и theme-deep.css (селекторы того же веса). */
+
+html {
+  scroll-padding-top: 96px;
+}
+@media (max-width: 1080px) {
+  html {
+    scroll-padding-top: 84px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ───────────── Шапка: липкая, на планшете и телефоне — бургер ───────────── */
+.site-header {
+  position: sticky;
+  inset: 0 0 auto;
+  z-index: 60;
+  display: block;
+  height: auto;
+  padding: 0;
+  gap: 0;
+  border-bottom: 1px solid var(--deep-border);
+  background: rgba(15, 15, 16, 0.86);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+.site-header.is-scrolled {
+  border-bottom-color: var(--deep-border-2);
+  background: rgba(15, 15, 16, 0.94);
+}
+.site-header__bar {
+  display: flex;
+  height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 0 40px;
+}
+.site-header__brand {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+}
+.site-header .site-nav {
+  min-width: 0;
+}
+.site-header .site-nav a {
+  position: relative;
+  padding: 8px 14px;
+  font-size: 17px;
+}
+.site-header .site-nav a[aria-current] {
+  background: rgba(108, 149, 255, 0.1);
+  color: var(--deep-link);
+}
+.site-header .brief-button {
+  min-height: 48px;
+  padding: 8px 20px;
+  font-size: 18px;
+  white-space: nowrap;
+}
+.site-header__burger {
+  display: none;
+}
+.site-menu {
+  display: none;
+}
+
+@media (max-width: 1280px) {
+  .site-header__bar {
+    gap: 20px;
+    padding: 0 32px;
+  }
+  .site-header .site-nav a {
+    padding: 8px 10px;
+    font-size: 16px;
+  }
+  .site-header .brief-button {
+    font-size: 17px;
+  }
+}
+
+/* планшеты и телефоны: пункты меню уходят в выпадающую панель */
+@media (max-width: 1080px) {
+  .site-header__bar {
+    height: 72px;
+    gap: 12px;
+    padding: 0 24px;
+  }
+  .site-header .site-nav {
+    display: none;
+  }
+  .site-header__bar > .brief-button {
+    margin-left: auto;
+  }
+  .site-header__burger {
+    display: inline-flex;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    border: 1px solid var(--deep-border-2);
+    border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease;
+  }
+  .site-header__burger:hover {
+    border-color: #3a3b40;
+    background: var(--deep-surface-2);
+  }
+  .site-header__burger:focus-visible,
+  .site-menu a:focus-visible {
+    outline: 2px solid var(--deep-link);
+    outline-offset: 3px;
+  }
+  .site-header__burger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--deep-text);
+    transition:
+      transform 200ms ease,
+      opacity 150ms ease;
+  }
+  .site-header.is-open .site-header__burger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .site-header.is-open .site-header__burger span:nth-child(2) {
+    opacity: 0;
+  }
+  .site-header.is-open .site-header__burger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+  .site-menu:not([hidden]) {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: grid;
+    gap: 2px;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+    padding: 8px 24px 20px;
+    border-bottom: 1px solid var(--deep-border-2);
+    background: var(--deep-canvas);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+    animation: site-menu-in 180ms ease both;
+  }
+  .site-menu a:not(.brief-button) {
+    padding: 14px 12px;
+    border-radius: 8px;
+    color: var(--deep-text);
+    font-size: 18px;
+    font-weight: 350;
+    line-height: 1.2;
+  }
+  .site-menu a:not(.brief-button):hover,
+  .site-menu a:not(.brief-button):active {
+    background: var(--deep-surface-2);
+  }
+  .site-menu a[aria-current] {
+    background: rgba(108, 149, 255, 0.1);
+    color: var(--deep-link);
+  }
+  .site-menu .brief-button {
+    display: none;
+  }
+}
+@keyframes site-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (max-width: 640px) {
+  .site-header__bar {
+    padding: 0 16px;
+  }
+  .site-header__bar > .brief-button {
+    min-height: 44px;
+    padding: 6px 14px;
+    font-size: 15px;
+  }
+  .site-menu:not([hidden]) {
+    padding-inline: 16px;
+  }
+}
+/* совсем узкие экраны: кнопка переезжает в меню */
+@media (max-width: 370px) {
+  .site-header__bar > .brief-button {
+    display: none;
+  }
+  .site-header__burger {
+    margin-left: auto;
+  }
+  .site-menu .brief-button {
+    display: inline-flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+}
+
+/* ───────────── Первый экран: оффер, «для задач», клиенты ───────────── */
+.hero__body {
+  padding-bottom: 36px;
+}
+.hero__content > p {
+  max-width: 880px;
+  font-size: 17px;
+  line-height: 1.45;
+  /* без «висячих» слов в конце строки на узких экранах */
+  text-wrap: balance;
+}
+.hero__line {
+  text-wrap: balance;
+}
+@media (min-width: 801px) {
+  .hero__line {
+    display: block;
+  }
+}
+.hero__audience {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  max-width: 1000px;
+  margin: 24px auto 0;
+}
+.hero__audience-label,
+.hero__proof-label {
+  color: var(--deep-muted-2);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.hero__audience ul,
+.hero__proof ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hero__audience li {
+  padding: 5px 12px 6px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 6px;
+  background: rgba(15, 15, 16, 0.55);
+  color: var(--deep-text-soft);
+  font-size: 14px;
+  font-weight: 350;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+/* «Проекты для …» — сразу под задачами, чтобы доказательство было на первом экране, а не под сгибом */
+.hero__proof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  margin: 14px auto 0;
+}
+.hero__proof ul {
+  gap: 4px 22px;
+}
+.hero__proof li {
+  color: var(--deep-text-soft);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 800px) {
+  .hero__content > p {
+    font-size: 15px;
+  }
+  .hero__actions {
+    margin-top: 20px;
+  }
+  .hero__audience {
+    margin-top: 20px;
+  }
+}
+/* телефон: все шесть задач видны сразу (в несколько рядов), без скрытой прокрутки */
+@media (max-width: 600px) {
+  .hero__audience {
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .hero__audience-label,
+  .hero__proof-label {
+    flex: 0 0 100%;
+    text-align: center;
+  }
+  .hero__audience ul {
+    gap: 6px;
+  }
+  .hero__audience li {
+    padding: 4px 10px 5px;
+    font-size: 13px;
+  }
+  .hero__proof {
+    gap: 4px 12px;
+    margin-top: 14px;
+  }
+  .hero__proof ul {
+    gap: 2px 16px;
+  }
+  .hero__proof li {
+    font-size: 14px;
+  }
+}
+
+/* ───────────── «Для кого»: шесть карточек-ссылок ───────────── */
+.audience .audience-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+/* вся карточка — одна кликабельная зона */
+.audience .audience-card__link::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  content: '';
+}
+.audience .audience-card {
+  cursor: pointer;
+}
+.audience .audience-card:has(.audience-card__link:focus-visible) {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 3px;
+}
+.audience .audience-card__link:focus-visible {
+  outline: none;
+}
+.audience .audience-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  color: var(--deep-link);
+  font-size: 14px;
+  font-weight: 350;
+  line-height: 1.3;
+}
+.audience .audience-card__more .arrow-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  transition: translate 180ms ease;
+}
+.audience .audience-card:hover .audience-card__more .arrow-icon {
+  translate: 4px 0;
+}
+.audience .audience-card:hover h3 {
+  color: #fff;
+}
+
+@media (max-width: 1179px) {
+  .audience .audience-card {
+    grid-template-areas:
+      'title art'
+      'lead lead'
+      'tags tags'
+      'more more';
+  }
+  .audience .audience-card__more {
+    grid-area: more;
+    justify-self: start;
+    margin-top: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .audience .audience-card__more .arrow-icon {
+    transition: none;
+  }
+  .audience .audience-card:hover .audience-card__more .arrow-icon {
+    translate: none;
+  }
+}
+
+/* ───────────── Кейсы: выбор задачи → выбор проекта ───────────── */
+.case-study__examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 4px;
+}
+.case-study__examples > span {
+  color: var(--deep-muted-2);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.case-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.case-switch__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 14px 7px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--deep-text-soft);
+  font: 350 14px/1.3 var(--font-mono);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.case-switch__item b {
+  color: var(--deep-text);
+  font-weight: 500;
+}
+.case-switch__item:hover {
+  border-color: #3a3b40;
+  background: var(--deep-surface-2);
+}
+.case-switch__item.is-active {
+  border-color: var(--deep-link);
+  background: rgba(0, 55, 194, 0.2);
+  color: #fff;
+}
+span.case-switch__item {
+  cursor: default;
+}
+span.case-switch__item:hover {
+  border-color: var(--deep-link);
+  background: rgba(0, 55, 194, 0.2);
+}
+.case-switch__item:focus-visible,
+.chip:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 3px;
+}
+.cases-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cases-card__tags li {
+  padding: 3px 10px 4px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: 6px;
+  color: var(--deep-text-soft);
+  font-size: 12px;
+  font-weight: 350;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* ───────────── Как мы работаем ───────────── */
+.process,
+.final-cta {
+  margin-top: 88px;
+}
+.process__heading {
+  max-width: 760px;
+}
+.process__steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.process-step {
+  position: relative;
+  padding: 24px 24px 28px;
+  border: 1px solid var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+}
+.process-step__num {
+  display: block;
+  margin-bottom: 28px;
+  color: var(--deep-link);
+  font: 300 38px/1 var(--font-mono);
+  letter-spacing: -0.04em;
+}
+.process-step h3 {
+  margin: 0;
+  color: var(--deep-text);
+  font: 400 22px/1.2 var(--font-mono);
+  letter-spacing: -0.035em;
+}
+.process-step p {
+  margin: 10px 0 0;
+  color: var(--deep-muted);
+  font-size: 15px;
+  font-weight: 350;
+  line-height: 1.5;
+}
+
+@media (max-width: 1200px) {
+  .process__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 800px) {
+  .process,
+  .final-cta {
+    margin-top: 56px;
+  }
+  .process-step__num {
+    margin-bottom: 24px;
+  }
+}
+@media (max-width: 640px) {
+  .process__steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ───────────── Финальный призыв ───────────── */
+.final-cta__inner {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  overflow: hidden;
+  padding: 56px clamp(24px, 24vw, 380px) 56px 56px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: var(--deep-radius-card);
+  background:
+    radial-gradient(
+      60% 130% at 100% 100%,
+      rgba(0, 55, 194, 0.6),
+      transparent 70%
+    ),
+    radial-gradient(45% 90% at 0 0, rgba(0, 55, 194, 0.2), transparent 70%),
+    var(--deep-surface);
+}
+.final-cta__art {
+  position: absolute;
+  top: 50%;
+  right: clamp(16px, 4vw, 72px);
+  width: clamp(190px, 19vw, 280px);
+  height: auto;
+  aspect-ratio: 1;
+  translate: 0 -50%;
+  pointer-events: none;
+  user-select: none;
+}
+.final-cta h2 {
+  max-width: 860px;
+  margin: 0;
+  color: var(--deep-text);
+  font: 400 clamp(28px, 3.3vw, 46px) / 1.1 var(--font-mono);
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.final-cta h2 span {
+  color: var(--deep-link);
+}
+.final-cta p {
+  max-width: 640px;
+  margin: 0;
+  color: var(--deep-text-soft);
+  font-size: 16px;
+  font-weight: 350;
+  line-height: 1.5;
+}
+.final-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+.final-cta__ghost {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  padding: 8px 20px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: var(--deep-radius-btn);
+  background: rgba(15, 15, 16, 0.4);
+  color: var(--deep-text);
+  font: 300 18px/1.25 var(--font-mono);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+.final-cta__ghost:hover {
+  border-color: #3a3b40;
+  background: var(--deep-surface-2);
+}
+.final-cta__ghost:focus-visible,
+.final-cta .arrow-button:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 3px;
+}
+@media (max-width: 800px) {
+  .final-cta__art {
+    display: none;
+  }
+  .final-cta__inner {
+    padding: 32px 22px 30px;
+  }
+  .final-cta__actions {
+    width: 100%;
+  }
+  .final-cta__actions > a {
+    flex: 1 1 100%;
+    justify-content: center;
+    font-size: 15px;
+  }
+}
+
+/* ───────────── Конфигуратор и аналитика: пометки ───────────── */
+.project-summary__note {
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  font-weight: 350;
+  line-height: 1.5;
+}
+.analytics__demo {
+  display: inline-flex;
+  margin-top: 14px;
+  padding: 4px 11px 5px;
+  border: 1px dashed var(--deep-border-2);
+  border-radius: 6px;
+  color: var(--deep-muted);
+  font-size: 12px;
+  font-weight: 350;
+  line-height: 1.3;
+}

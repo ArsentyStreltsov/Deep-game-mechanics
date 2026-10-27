@@ -17,7 +17,7 @@ export default function FAQ() {
       id="faq"
       aria-labelledby="faq-heading"
     >
-      <header className="faq__heading">
+      <header className="faq__heading" data-reveal>
         <h2 className="section-title" id="faq-heading">
           FAQ
         </h2>
@@ -25,7 +25,7 @@ export default function FAQ() {
           Коротко о том, как устроена работа с платформой
         </p>
       </header>
-      <div className="faq__list">
+      <div className="faq__list" data-reveal>
         {faqItems.map((item, index) => {
           const isOpen = openIndex === index;
           return (

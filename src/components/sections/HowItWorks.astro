@@ -1,0 +1,37 @@
+---
+import { processSection } from '@/data/landing';
+
+const { title, accent, lead, steps } = processSection;
+/** Цвет номера шага — из общей палитры задач. */
+const stepAccents = ['blue', 'violet', 'cyan', 'green'] as const;
+---
+
+<section
+  class="process section-shell"
+  id="process"
+  aria-labelledby="process-heading"
+>
+  <div class="process__heading" data-reveal>
+    <h2 class="section-title" id="process-heading">
+      {title} <span>{accent}</span>
+    </h2>
+    <p class="section-lead">{lead}</p>
+  </div>
+  <ol class="process__steps" data-reveal="mark">
+    {steps.map((step, index) => (
+      <li
+        class="process-step"
+        data-accent={stepAccents[index]}
+        data-spot
+        data-reveal
+        style={`--i:${index}`}
+      >
+        <span class="process-step__num" aria-hidden="true">
+          {String(index + 1).padStart(2, '0')}
+        </span>
+        <h3>{step.title}</h3>
+        <p>{step.text}</p>
+      </li>
+    ))}
+  </ol>
+</section>

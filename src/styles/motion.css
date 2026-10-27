@@ -1,0 +1,422 @@
+/* ───────────── Движение: небольшие анимации, чтобы страница не была статичной ─────────────
+   Всё держится на двух классах на <html>:
+     motion-ok   — в системе не выключены анимации (ставит встроенный скрипт в BaseLayout до первой
+                   отрисовки); под ним — вход первого экрана и «живые» фоновые движения иконок;
+     motion-live — Motion.tsx подключил наблюдатель прокрутки; под ним блоки с data-reveal
+                   прячутся до появления в экране и потом выезжают (data-in).
+   Нет JS или включён prefers-reduced-motion — классов нет, и страница статична и целиком видна.
+   Используются отдельные свойства translate / scale / rotate, чтобы анимации не спорили с
+   hover-эффектами на transform. Подключается последним. */
+
+/* ───────────── Ключевые кадры ───────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 22px;
+  }
+}
+/* вход блока при прокрутке: короче и ниже, чтобы контент не «догонял» взгляд */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+@keyframes rise-sm {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes stage-in {
+  from {
+    opacity: 0;
+    translate: 0 36px;
+    scale: 0.97;
+  }
+}
+@keyframes float-y {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -9px;
+  }
+}
+@keyframes icon-pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+    rotate: -12deg;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+@keyframes chip-pop {
+  from {
+    scale: 0.92;
+  }
+  to {
+    scale: 1;
+  }
+}
+@keyframes accent-in {
+  from {
+    color: var(--deep-text);
+  }
+}
+@keyframes shimmer {
+  0%,
+  62% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0% 0;
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.78;
+    scale: 1;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.08;
+  }
+}
+@keyframes sheen {
+  0%,
+  58% {
+    translate: -120% 0;
+  }
+  100% {
+    translate: 120% 0;
+  }
+}
+@keyframes wipe-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes num-lit {
+  from {
+    color: var(--deep-border-2);
+    text-shadow: none;
+  }
+  45% {
+    text-shadow: 0 0 26px rgb(var(--accent-rgb) / 0.9);
+  }
+}
+@keyframes line-draw {
+  from {
+    scale: 0 1;
+  }
+}
+@keyframes cta-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(3deg);
+  }
+}
+@keyframes cta-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(59 115 252 / 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 18px rgb(59 115 252 / 0);
+  }
+}
+
+/* ───────────── Шапка: полоска прогресса прокрутки ───────────── */
+.site-header__progress {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--c-blue),
+    var(--c-violet) 45%,
+    var(--c-cyan)
+  );
+  transform: scaleX(var(--progress, 0));
+  transform-origin: 0 50%;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* ───────────── Появление блоков при прокрутке ───────────── */
+html.motion-live [data-reveal]:not([data-reveal='mark']):not([data-in]) {
+  opacity: 0;
+}
+html.motion-live
+  [data-reveal]:not([data-reveal='mark'])[data-in]:not([data-in='now']) {
+  animation: reveal-up 0.45s cubic-bezier(0.22, 0.7, 0.25, 1) var(--rd, 0ms)
+    backwards;
+}
+/* цветная часть заголовка «закрашивается» следом за появлением */
+html.motion-live [data-reveal][data-in]:not([data-in='now']) h2 span {
+  animation: accent-in 0.8s ease calc(var(--rd, 0ms) + 0.15s) backwards;
+}
+
+/* ───────────── Первый экран ───────────── */
+html.motion-ok .hero__content h1 {
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.05s backwards;
+}
+html.motion-ok .hero__content > p {
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.16s backwards;
+}
+html.motion-ok .hero__actions {
+  animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.27s backwards;
+}
+html.motion-ok .hero__audience-label,
+html.motion-ok .hero__proof-label {
+  animation: fade-in 0.6s ease 0.4s backwards;
+}
+html.motion-ok .hero__audience li {
+  animation: rise-sm 0.55s cubic-bezier(0.2, 0.7, 0.2, 1)
+    calc(0.42s + var(--i, 0) * 70ms) backwards;
+}
+html.motion-ok .hero__proof li {
+  animation: fade-in 0.6s ease calc(0.6s + var(--i, 0) * 80ms) backwards;
+}
+html.motion-ok .hero__stage {
+  animation: stage-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s backwards;
+}
+/* свечение под слайдером «дышит» */
+html.motion-ok .hero__surface::before {
+  animation: breathe 9s ease-in-out infinite;
+}
+/* блик пробегает по цветной части заголовка */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  html.motion-ok .hero__content h1 > span {
+    background-image: linear-gradient(
+      100deg,
+      #6c95ff 0%,
+      #6c95ff 42%,
+      #e6eeff 50%,
+      #6c95ff 58%,
+      #6c95ff 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: shimmer 8s ease-in-out 2.4s infinite;
+  }
+}
+
+/* ───────────── Для кого: иконки парят, карточка подсвечивается под курсором ───────────── */
+html.motion-ok .audience .audience-card__art {
+  animation: float-y 6.5s ease-in-out calc(var(--i, 0) * -1.1s) infinite;
+}
+.audience .audience-card::after,
+.mechanic-card::after,
+.process-step::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    rgb(var(--accent-rgb) / 0.13),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+.mechanic-card,
+.process-step {
+  position: relative;
+  isolation: isolate;
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-spot]:hover::after {
+    opacity: 1;
+  }
+}
+/* плашка Telegram: редкий блик по градиенту */
+.telegram-banner {
+  position: relative;
+  overflow: hidden;
+}
+html.motion-ok .telegram-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 32%,
+    rgb(255 255 255 / 0.1) 50%,
+    transparent 68%
+  );
+  translate: -120% 0;
+  animation: sheen 7s ease-in-out 2s infinite;
+  pointer-events: none;
+}
+
+/* ───────────── Механики ───────────── */
+html.motion-ok .mechanics__decoration {
+  animation: float-y 6s ease-in-out infinite;
+}
+.mechanic-art img {
+  transition:
+    scale 360ms cubic-bezier(0.3, 1.5, 0.5, 1),
+    rotate 360ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.mechanic-card:hover .mechanic-art img {
+  scale: 1.12;
+  rotate: -6deg;
+}
+/* выбранная карточка и крупная иконка справа «выскакивают» при смене */
+html.motion-ok .mechanic-card.is-active .mechanic-art img {
+  animation: icon-pop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+}
+html.motion-ok .mechanic-detail__head .mechanic-art {
+  animation:
+    icon-pop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) 0.05s backwards,
+    float-y 5.5s ease-in-out 0.7s infinite;
+}
+html.motion-ok .mechanic-detail__head h3,
+html.motion-ok .mechanic-detail__head p {
+  animation: rise-sm 0.45s ease 0.08s backwards;
+}
+html.motion-ok .mechanic-detail__body li {
+  animation: rise-sm 0.45s ease calc(0.14s + var(--i, 0) * 60ms) backwards;
+}
+
+/* ───────────── Как мы работаем: цифры зажигаются по очереди, линия тянется к следующему шагу ───────────── */
+@media (min-width: 1201px) {
+  .process-step__num::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 64px;
+    width: calc(100% - 12px);
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--accent-rgb) / 0.7),
+      rgb(var(--accent-rgb) / 0.08)
+    );
+    transform-origin: 0 50%;
+    pointer-events: none;
+  }
+  .process-step:last-child .process-step__num::after {
+    display: none;
+  }
+}
+.process-step__num {
+  position: relative;
+}
+html.motion-live .process__steps:not([data-in]) .process-step__num {
+  color: var(--deep-border-2);
+  text-shadow: none;
+}
+html.motion-live .process__steps:not([data-in]) .process-step__num::after {
+  scale: 0 1;
+}
+html.motion-ok .process__steps[data-in] .process-step__num {
+  animation: num-lit 0.9s ease calc(0.1s + var(--i, 0) * 0.12s) backwards;
+}
+html.motion-ok .process__steps[data-in] .process-step__num::after {
+  animation: line-draw 0.6s ease calc(0.2s + var(--i, 0) * 0.12s) backwards;
+}
+
+/* ───────────── Кейсы: смена задачи и проекта ───────────── */
+html.motion-ok .benefits-list .benefit-row {
+  animation: rise-sm 0.3s ease calc(var(--i, 0) * 40ms) backwards;
+}
+html.motion-ok .case-visual__copy {
+  animation: rise-sm 0.5s ease backwards;
+}
+html.motion-ok .case-visual__meta {
+  animation: fade-in 0.4s ease backwards;
+}
+/* в панели «в стиле бренда» текст лежит прямо в сетке (copy — display: contents), поэтому анимируем его части */
+html.motion-ok .case-visual--brand .case-visual__head,
+html.motion-ok .case-visual--brand .case-facts,
+html.motion-ok .case-visual--brand .case-stats {
+  animation: rise-sm 0.5s ease backwards;
+}
+
+/* ───────────── Конфигуратор ───────────── */
+html.motion-ok .builder-options button.is-selected {
+  animation: chip-pop 0.34s cubic-bezier(0.3, 1.7, 0.5, 1);
+}
+html.motion-ok .project-summary h3,
+html.motion-ok .project-summary > p:not(.project-summary__note) {
+  animation: rise-sm 0.4s ease backwards;
+}
+html.motion-ok .summary-tags span {
+  animation: rise-sm 0.35s ease backwards;
+}
+
+/* ───────────── FAQ: стрелка поворачивается плавно ───────────── */
+.faq-item__trigger img {
+  transition: transform 260ms ease;
+}
+
+/* ───────────── Кнопки: стрелка слегка сдвигается ───────────── */
+.arrow-button__arrow.arrow-icon,
+.compact-cta__icon .arrow-icon {
+  transition: translate 180ms ease;
+}
+.arrow-button:hover .arrow-button__arrow.arrow-icon,
+.compact-cta:hover .compact-cta__icon .arrow-icon {
+  translate: 2px -2px;
+}
+
+/* ───────────── Финальный блок ───────────── */
+html.motion-ok .final-cta__art {
+  animation: cta-float 7s ease-in-out infinite;
+}
+html.motion-ok .final-cta__inner[data-in] .arrow-button {
+  animation: cta-ring 1.6s ease-out 1.2s 3;
+}
+
+/* ───────────── Запасной выключатель ───────────── */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .arrow-button:hover .arrow-button__arrow.arrow-icon,
+  .compact-cta:hover .compact-cta__icon .arrow-icon,
+  .mechanic-card:hover .mechanic-art img {
+    translate: none;
+    scale: none;
+    rotate: none;
+  }
+  .site-header__progress {
+    transition: none;
+  }
+}
+@media print {
+  [data-reveal] {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,106 @@
+/* Cascadia Mono (SIL OFL 1.1) — тот же шрифт, что на deep-agency.ru. Лицензия: /fonts/LICENSE-CascadiaMono.txt */
+
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Cascadia Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 700;
+  src: url('/fonts/cascadia-mono-cyrillic-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
+}
+
+/* cyrillic */
+@font-face {
+  font-family: 'Cascadia Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 700;
+  src: url('/fonts/cascadia-mono-cyrillic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+/* latin-ext */
+@font-face {
+  font-family: 'Cascadia Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 700;
+  src: url('/fonts/cascadia-mono-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Cascadia Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 700;
+  src: url('/fonts/cascadia-mono-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* Montserrat, Inter и Rubik (SIL OFL 1.1) — только для блока кейсов: у каждого клиента своя типографика
+   (МТС — широкая геометрика, Т-Банк и hh.ru — нейтральная гротескная, МегаФон и Zewa — мягкая округлая).
+   Это открытые шрифты-аналоги: фирменные гарнитуры брендов закрыты. Грузятся только когда кейс на экране.
+   Лицензии: /fonts/LICENSE-Montserrat.txt, LICENSE-Inter.txt, LICENSE-Rubik.txt */
+
+/* Montserrat cyrillic */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/montserrat-cyrillic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+/* Montserrat latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/montserrat-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* Inter cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/inter-cyrillic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+/* Inter latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* Rubik cyrillic */
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 900;
+  src: url('/fonts/rubik-cyrillic-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+/* Rubik latin */
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 900;
+  src: url('/fonts/rubik-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}

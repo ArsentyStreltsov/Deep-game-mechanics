@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { figmaAssets } from '@/lib/figma-assets';
-import { mechanicsCatalog } from '@/data/landing';
-import { IconTile } from '@/components/ui/IconTile';
+import { mechanicsCatalog, mechanicsLead } from '@/data/landing';
 import { ArrowButton } from '@/components/ui/ArrowButton';
+import { cssVars } from '@/lib/css-vars';
+import MechanicsQuiz from '@/components/sections/MechanicsQuiz';
 
 function iconForMechanic(icon: string) {
   return figmaAssets.mechanicIcons[
@@ -26,6 +27,7 @@ function selectIntegrationsIndex() {
 
 export default function Mechanics() {
   const [active, setActive] = useState(mechanicIndexFromHash);
+  const [quizOpen, setQuizOpen] = useState(false);
   const current = mechanicsCatalog[active] ?? mechanicsCatalog[0];
 
   useEffect(() => {
@@ -35,11 +37,15 @@ export default function Mechanics() {
       }
     }
     function onClick(event: MouseEvent) {
-      const link = (event.target as HTMLElement | null)?.closest('a');
-      const href = link?.getAttribute('href');
+      const target = event.target as HTMLElement | null;
+      const href = target?.closest('a')?.getAttribute('href');
       if (href === '#integrations' || href === '/#integrations') {
         setActive(selectIntegrationsIndex());
       }
+      // Ссылки с data-mechanic-id (например, чип «Своя механика» на первом экране) открывают эту возможность.
+      const id = target?.closest('[data-mechanic-id]')?.getAttribute('data-mechanic-id');
+      const index = id ? mechanicsCatalog.findIndex((item) => item.id === id) : -1;
+      if (index >= 0) setActive(index);
     }
     applyHash();
     window.addEventListener('hashchange', applyHash);
@@ -57,22 +63,30 @@ export default function Mechanics() {
       aria-labelledby="mechanics-heading"
     >
       <span className="mechanics__anchor" id="integrations" />
-      <div className="mechanics__heading">
+      <div className="mechanics__heading" data-reveal>
         <div>
           <h2 className="section-title" id="mechanics-heading">
             Механики и <span>возможности</span>
           </h2>
-          <p className="section-lead">
-            Короткий набор того, что можно собрать в проекте. Узнайте свою
-            задачу — сценарий, контент и интеграции докрутим под неё.
-          </p>
+          <p className="section-lead">{mechanicsLead}</p>
         </div>
-        <img
-          className="mechanics__decoration"
-          src={figmaAssets.mechanicsDecoration}
-          alt=""
-          aria-hidden="true"
-        />
+        <button
+          className="mechanics__try"
+          type="button"
+          aria-haspopup="dialog"
+          aria-label="Протестируйте механики — подбор за 3 вопроса"
+          onClick={() => setQuizOpen(true)}
+        >
+          <img
+            className="mechanics__decoration"
+            src={figmaAssets.mechanicsDecoration}
+            alt=""
+            aria-hidden="true"
+          />
+          <span className="mechanics__try-note" aria-hidden="true">
+            Тест из 3 вопросов
+          </span>
+        </button>
       </div>
       <div className="mechanics__layout">
         <div
@@ -87,12 +101,22 @@ export default function Mechanics() {
               type="button"
               role="option"
               aria-selected={index === active}
+              data-accent={item.accent}
+              data-spot
+              data-reveal
+              style={cssVars({ '--i': index })}
               onClick={() => setActive(index)}
             >
               <span className="mechanic-card__top">
-                <IconTile>
-                  <img src={iconForMechanic(item.icon)} alt="" />
-                </IconTile>
+                <span className="mechanic-art">
+                  <img
+                    src={iconForMechanic(item.icon)}
+                    alt=""
+                    width={256}
+                    height={256}
+                    decoding="async"
+                  />
+                </span>
               </span>
               <strong>{item.title}</strong>
               <span className="mechanic-card__description">{item.summary}</span>
@@ -102,11 +126,19 @@ export default function Mechanics() {
         <aside
           className="mechanic-detail"
           aria-label={current.title}
+          data-accent={current.accent}
+          data-reveal
         >
-          <div className="mechanic-detail__head">
-            <IconTile>
-              <img src={iconForMechanic(current.icon)} alt="" />
-            </IconTile>
+          <div className="mechanic-detail__head" key={current.id}>
+            <span className="mechanic-art mechanic-art--detail">
+              <img
+                src={iconForMechanic(current.icon)}
+                alt=""
+                width={256}
+                height={256}
+                decoding="async"
+              />
+            </span>
             <div>
               <h3>{current.title}</h3>
               <p>{current.description}</p>
@@ -114,15 +146,25 @@ export default function Mechanics() {
           </div>
           <div className="mechanic-detail__body">
             <span className="mechanic-detail__label">Возможности</span>
-            <ul>
-              {current.capabilities.map((item) => (
-                <li key={item}>{item}</li>
+            <ul key={current.id}>
+              {current.capabilities.map((item, index) => (
+                <li key={item} style={cssVars({ '--i': index })}>
+                  {item}
+                </li>
               ))}
             </ul>
-            <ArrowButton href="#configurator">Обсудить эту возможность</ArrowButton>
+            <ArrowButton href="#configurator" openContact>
+              Обсудить эту возможность
+            </ArrowButton>
           </div>
         </aside>
       </div>
+      {quizOpen && (
+        <MechanicsQuiz
+          onClose={() => setQuizOpen(false)}
+          onPick={(index) => setActive(index)}
+        />
+      )}
     </section>
   );
 }

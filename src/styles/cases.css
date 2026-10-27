@@ -1,0 +1,122 @@
+/* ───────────── Кейсы: страница «Все кейсы» и ссылки на отдельный кейс ─────────────
+   Карточка на странице кейсов — ссылка целиком (растянутая ссылка в заголовке) и ведёт в раздел
+   «Кейсы» на главной, где выбран этот проект. Подключается после brands.css. */
+
+/* невидимые якоря `case-<id>` над вкладками: по ним браузер прокручивает страницу к нужному кейсу */
+.case-anchors {
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
+/* прежнее название клиента рядом с текущим: «Т-Банк (ex-Тинькофф)» */
+.case-visual__brand-note {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(13px, 2.4cqw, 17px);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
+  opacity: 0.85;
+}
+.cases-card__note {
+  margin-left: 0.4em;
+  font-size: 0.68em;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+/* ───────────── Шапка страницы: «назад» ───────────── */
+.cases-page__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px -10px;
+  padding: 9px 14px 9px 10px;
+  border-radius: 8px;
+  color: var(--deep-muted);
+  font: 350 15px/1 var(--font-mono);
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+.cases-page__back .arrow-icon {
+  width: 18px;
+  height: 18px;
+}
+.cases-page__back:hover {
+  background: var(--deep-surface-2);
+  color: var(--deep-text);
+}
+.cases-page__back:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 2px;
+}
+
+/* ───────────── Карточка кейса — ссылка ───────────── */
+.cases-card {
+  position: relative;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+.cases-card__kind {
+  margin: 0;
+}
+.cases-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+/* растянутая ссылка: кликабельна вся карточка, а не только заголовок. Ссылка тянется до ближайшего
+   позиционированного предка — это сама карточка, поэтому тело карточки позиционировать нельзя */
+.cases-card--brand .cases-card__body {
+  position: static;
+}
+.cases-card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+}
+.cases-card__link:focus-visible {
+  outline: none;
+}
+.cases-card__link:focus-visible::after {
+  outline: 3px solid var(--cv-focus, var(--deep-link));
+  outline-offset: -3px;
+}
+.cases-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  margin-top: 6px;
+  color: var(--cv-ink, var(--deep-text));
+  font: 700 14px/1 var(--cv-font, var(--font-text));
+}
+.cases-card__more .arrow-icon {
+  width: 18px;
+  height: 18px;
+  transition: translate 180ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cases-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  }
+  .cases-card:hover .cases-card__more .arrow-icon {
+    translate: 4px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cases-card,
+  .cases-card__more .arrow-icon {
+    transition: none;
+  }
+  .cases-card:hover {
+    transform: none;
+  }
+}

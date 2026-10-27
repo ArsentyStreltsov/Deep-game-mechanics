@@ -1,0 +1,1039 @@
+/*
+ * Тема «как на deep-agency.ru».
+ *
+ * Подключается после global.css и переопределяет оформление, не трогая вёрстку:
+ * структура, сетки и тексты остаются прежними. Чтобы вернуть прежний светлый вид,
+ * достаточно убрать импорт этого файла в src/layouts/BaseLayout.astro.
+ *
+ * Токены сняты с основного сайта:
+ *   фон #0f0f10, текст #fafafa, акцент #0037c2 (hsl 223 100% 38%),
+ *   рамки #1d1e20 / #2c2d30, шрифт Cascadia Mono, кнопки radius 16px, карточки radius 8px.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --deep-canvas: #0f0f10;
+  --deep-surface: rgba(255, 255, 255, 0.025);
+  --deep-surface-2: rgba(255, 255, 255, 0.05);
+  --deep-border: #1d1e20;
+  --deep-border-2: #2c2d30;
+  --deep-text: #fafafa;
+  --deep-text-soft: #e0e0e0;
+  --deep-muted: #a0a5b1;
+  --deep-muted-2: #777a83;
+  --deep-primary: #0037c2;
+  --deep-primary-hover: #0041e0;
+  --deep-primary-press: #002a96;
+  --deep-primary-deep: #001a5c;
+  --deep-tint: #141d34;
+  --deep-link: #6c95ff;
+  --deep-glow: rgba(0, 62, 224, 0.22);
+  --deep-radius-btn: 16px;
+  --deep-radius-card: 8px;
+
+  /* прежние токены global.css перенаправлены на новую палитру */
+  --blue: var(--deep-primary);
+  --blue-light: var(--deep-link);
+  --navy: var(--deep-text);
+  --muted: var(--deep-muted);
+  --pale: var(--deep-surface-2);
+  --line: var(--deep-border);
+
+  color: var(--deep-text);
+  background: var(--deep-canvas);
+  font-family: var(--font-mono);
+  font-weight: 350;
+}
+
+html {
+  background: var(--deep-canvas);
+}
+
+body {
+  background: var(--deep-canvas);
+  color: var(--deep-text);
+  font-family: var(--font-mono);
+  font-weight: 350;
+}
+
+::selection {
+  background: var(--deep-primary);
+  color: #fff;
+}
+
+/* ───────────── Логотип ───────────── */
+.brand-mark {
+  display: grid;
+  gap: 5px;
+  color: var(--deep-text);
+  line-height: 1;
+}
+.brand-mark__logo {
+  width: 104px;
+  height: auto;
+  aspect-ratio: 69 / 30;
+}
+.brand-mark small {
+  font: 600 11.5px/1 var(--font-mono);
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 1;
+  white-space: nowrap;
+}
+
+/* ───────────── Шапка ───────────── */
+.landing-page {
+  width: 100%;
+  max-width: none;
+  padding: 0 0 72px;
+}
+
+.hero {
+  width: 100%;
+  min-height: 0;
+  border-radius: 0;
+  color: var(--deep-text);
+}
+.hero__surface {
+  border-radius: 0;
+  background: var(--deep-canvas);
+  /* вырез под кнопку из старого оформления больше не нужен */
+  -webkit-mask-box-image-source: none;
+  mask-border-source: none;
+}
+.hero__surface::before {
+  inset: 0;
+  background: radial-gradient(
+    ellipse 55% 48% at 50% 100%,
+    rgba(0, 55, 194, 0.3),
+    transparent 72%
+  );
+}
+/* размытая спираль с основного сайта (home-hero-spiral.svg): кольца за слайдером, снизу и сверху плавно гаснут */
+.hero__surface::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -520px;
+  z-index: 0;
+  width: 1500px;
+  height: 1469px;
+  transform: translateX(-50%);
+  background: url('/images/deep-spiral.svg') center / 100% 100% no-repeat;
+  opacity: 0.92;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to top,
+    transparent 0,
+    #000 14%,
+    #000 55%,
+    transparent 90%
+  );
+  mask-image: linear-gradient(
+    to top,
+    transparent 0,
+    #000 14%,
+    #000 55%,
+    transparent 90%
+  );
+}
+.hero__grain {
+  display: none;
+}
+/* свечение спирали плавно гаснет к нижнему краю первого экрана, без горизонтального среза */
+.hero__surface {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    #000 calc(100% - 170px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    #000 calc(100% - 170px),
+    transparent 100%
+  );
+}
+
+.site-header {
+  position: relative;
+  inset: auto;
+  z-index: 6;
+  height: 88px;
+  padding: 0 40px;
+  gap: 32px;
+  border-bottom: 1px solid var(--deep-border);
+  background: rgba(15, 15, 16, 0.86);
+  backdrop-filter: blur(12px);
+}
+.site-header__brand {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+}
+.site-nav {
+  justify-content: center;
+  gap: 8px;
+  padding: 0;
+}
+.site-nav a {
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--deep-text);
+  font-size: 18px;
+  font-weight: 350;
+}
+.site-nav a:hover {
+  background: var(--deep-surface-2);
+  transform: none;
+}
+.site-nav a:active {
+  background: rgba(255, 255, 255, 0.09);
+  transform: none;
+}
+.site-nav a:focus-visible,
+.brief-button:focus-visible,
+.hero__actions a:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 3px;
+}
+
+/* ───────────── Кнопки: как .button--primary / .button--outline на основном сайте ───────────── */
+.brief-button,
+.arrow-button,
+.compact-cta {
+  min-height: 52px;
+  padding: 8px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--deep-radius-btn);
+  background: var(--deep-primary);
+  color: var(--deep-text);
+  font: 350 18px/1.25 var(--font-mono);
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: none;
+  filter: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+.brief-button {
+  width: auto;
+  flex: 0 0 auto;
+  font-size: 20px;
+  font-weight: 300;
+}
+.site-header .brief-button {
+  box-shadow: none;
+}
+.brief-button:hover,
+.arrow-button:hover,
+.compact-cta:hover {
+  background: var(--deep-primary-hover);
+  filter: none;
+  transform: none;
+  box-shadow: none;
+}
+.brief-button:active,
+.arrow-button:active,
+.compact-cta:active {
+  background: var(--deep-primary-press);
+  filter: none;
+  transform: none;
+}
+
+.arrow-button__icon,
+.compact-cta__icon,
+.compact-cta span {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+  border-radius: 0;
+  background: transparent;
+  color: currentColor;
+}
+.arrow-button__arrow.arrow-icon,
+.compact-cta__icon .arrow-icon {
+  width: 22px;
+  height: 22px;
+}
+.arrow-button--light {
+  background: var(--deep-text);
+  color: var(--deep-primary);
+}
+.arrow-button--light:hover {
+  background: #fff;
+}
+.arrow-button--light .arrow-button__icon {
+  background: transparent;
+  color: var(--deep-primary);
+}
+
+.hero__secondary {
+  min-height: 52px;
+  padding: 8px 20px;
+  border: 1px solid var(--deep-border-2);
+  border-radius: var(--deep-radius-btn);
+  background: transparent;
+  color: var(--deep-text);
+  font: 300 18px/1.25 var(--font-mono);
+  text-transform: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+.hero__secondary:hover {
+  border-color: #3a3b40;
+  background: var(--deep-surface-2);
+  transform: none;
+}
+.hero__secondary:active {
+  background: rgba(255, 255, 255, 0.09);
+  transform: none;
+}
+
+/* ───────────── Первый экран ───────────── */
+.hero__body {
+  padding: clamp(28px, 3vw, 44px) 24px 72px;
+}
+.hero + .audience {
+  margin-top: 24px;
+}
+.hero__content h1 {
+  font: 400 clamp(32px, 3.6vw, 54px)/1.1 var(--font-mono);
+  letter-spacing: -0.045em;
+  color: var(--deep-text);
+  text-wrap: balance;
+}
+.hero__content h1 span {
+  color: var(--deep-link);
+}
+.hero__content > p {
+  max-width: 780px;
+  margin-top: 22px;
+  color: var(--deep-text-soft);
+  font-size: 16px;
+  font-weight: 350;
+  line-height: 1.55;
+}
+.hero__actions {
+  gap: 12px;
+  margin-top: 26px;
+}
+.hero__actions .arrow-button {
+  width: auto;
+  justify-content: center;
+  padding: 8px 18px 8px 22px;
+  font-size: 18px;
+  line-height: 1.25;
+}
+.hero__stage {
+  /* на всю ширину экрана: слайдер выходит за боковые поля hero__body (24px) */
+  width: calc(100% + 48px);
+  margin-top: 28px;
+}
+
+/* ═════════════ Часть 2: остальные секции ═════════════ */
+
+/* ───────────── Общие элементы секций ───────────── */
+.section-title {
+  color: var(--deep-text);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.14;
+}
+.section-title span {
+  color: var(--deep-link);
+}
+.section-lead {
+  color: var(--deep-muted);
+  font-weight: 350;
+  line-height: 1.5;
+}
+.eyebrow-pill {
+  border: 1px solid rgba(108, 149, 255, 0.3);
+  background: var(--deep-tint);
+  color: var(--deep-link);
+  font-weight: 350;
+}
+
+/* плитки-иконки: тёмная плитка и белый значок с мягким синим свечением, как значки услуг на основном сайте */
+.icon-tile {
+  border: 1px solid rgba(108, 149, 255, 0.22);
+  border-radius: 12px;
+  background: var(--deep-tint);
+  color: #fff;
+}
+.icon-tile img {
+  filter: brightness(0) invert(1) drop-shadow(0 0 7px rgba(44, 104, 255, 0.85));
+}
+.audience-card .icon-tile {
+  border-radius: 14px;
+}
+.benefit-row .icon-tile {
+  border-radius: 14px;
+}
+
+/* ритм страницы: секции идут по одной колонке на фоне #0f0f10, без светлых «листов» */
+.audience,
+.mechanics,
+.faq {
+  margin-top: 88px;
+}
+.case-study,
+.configurator,
+.analytics {
+  margin-top: 88px;
+  padding-block: 0;
+  padding-inline: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.case-study {
+  background: radial-gradient(
+    ellipse 45% 55% at 0% 50%,
+    rgba(0, 55, 194, 0.16),
+    transparent 70%
+  );
+}
+.configurator {
+  background:
+    radial-gradient(
+      ellipse 45% 50% at 100% 60%,
+      rgba(0, 55, 194, 0.2),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 35% 40% at 0% 40%,
+      rgba(0, 55, 194, 0.1),
+      transparent 70%
+    );
+}
+.analytics {
+  background: radial-gradient(
+    ellipse 50% 40% at 50% 30%,
+    rgba(0, 55, 194, 0.14),
+    transparent 70%
+  );
+}
+.case-study__inner,
+.configurator__inner,
+.analytics__inner {
+  width: min(var(--content), calc(100% - 64px));
+  margin-inline: auto;
+}
+
+/* ───────────── Для кого ───────────── */
+.audience-card {
+  border-color: var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+  box-shadow: none;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.audience-card:hover {
+  border-color: var(--deep-border-2);
+  background: var(--deep-surface-2);
+}
+.audience-card h2,
+.audience-card h3 {
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+.audience-card p {
+  color: var(--deep-muted);
+  font-weight: 350;
+}
+
+.telegram-banner {
+  border: 1px solid rgba(138, 170, 255, 0.3);
+  border-radius: 12px;
+  background: linear-gradient(110deg, #0a2a8f 0%, #0037c2 55%, #0a2a8f 100%);
+}
+.telegram-banner .icon-tile {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 10, 50, 0.45);
+  box-shadow: none;
+}
+.telegram-banner__copy strong {
+  font-weight: 600;
+}
+.telegram-banner__copy small {
+  color: rgba(226, 235, 255, 0.82);
+  font-weight: 350;
+}
+.telegram-banner__arrow {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+}
+
+/* ───────────── Кейсы ───────────── */
+.case-study__filter > span {
+  color: var(--deep-muted-2);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--deep-border-2);
+  background: transparent;
+  color: var(--deep-text-soft);
+  font-weight: 350;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.chip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  border-radius: 50%;
+  background: var(--deep-muted-2);
+}
+.chip:hover {
+  border-color: #3a3b40;
+  background: var(--deep-surface-2);
+}
+.chip--selected,
+.chip--selected:hover {
+  border-color: var(--deep-primary);
+  background: var(--deep-primary);
+  color: #fff;
+  font-weight: 350;
+}
+.chip--selected::before {
+  background: #fff;
+}
+.chip:focus-visible,
+.chip--selected:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 2px;
+}
+
+.benefits-panel {
+  border-color: var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+}
+.benefits-panel h3 {
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+.benefits-panel__heading p,
+.benefit-row p {
+  color: var(--deep-muted);
+}
+.benefit-row {
+  border-bottom-color: var(--deep-border);
+}
+
+.case-visual {
+  border: 1px solid rgba(138, 170, 255, 0.18);
+  border-radius: var(--deep-radius-card);
+  background: #070a14;
+}
+.case-visual__copy h3 {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.case-visual__copy h4 {
+  font-weight: 350;
+  letter-spacing: -0.03em;
+}
+.case-stats strong {
+  font-weight: 600;
+}
+.case-visual__counter-label {
+  font-weight: 350;
+}
+.case-visual__counter button {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+.case-visual__counter button:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: none;
+}
+.case-visual__counter button.is-muted {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ───────────── Механики ───────────── */
+.mechanic-card {
+  border-color: var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+  box-shadow: none;
+}
+.mechanic-card:hover {
+  border-color: var(--deep-border-2);
+  background: var(--deep-surface-2);
+  box-shadow: 0 16px 40px rgba(0, 55, 194, 0.16);
+  transform: translateY(-2px);
+}
+.mechanic-card.is-active {
+  border-color: rgba(150, 180, 255, 0.5);
+  background: linear-gradient(145deg, #0c2680 0%, #0037c2 65%, #1a5bff 130%);
+  box-shadow: 0 20px 50px rgba(0, 55, 194, 0.35);
+}
+.mechanic-card__top .icon-tile {
+  border-color: rgba(138, 170, 255, 0.4);
+  background: var(--deep-primary);
+}
+.demo-badge {
+  border: 1px solid rgba(108, 149, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--deep-link);
+  font-weight: 350;
+}
+.mechanic-card.is-active .demo-badge {
+  border-color: #fff;
+  background: #fff;
+  color: var(--deep-primary);
+}
+.mechanic-card__description {
+  color: var(--deep-muted);
+}
+.mechanic-card > strong {
+  font-weight: 600;
+}
+.mechanics-more {
+  border: 1px solid rgba(108, 149, 255, 0.32);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-tint);
+}
+.mechanics-more .eyebrow-pill {
+  border-color: rgba(108, 149, 255, 0.4);
+  background: transparent;
+  color: var(--deep-link);
+  box-shadow: none;
+}
+.mechanics-more h3 {
+  color: var(--deep-text);
+  font-weight: 400;
+}
+.mechanic-detail {
+  border-color: var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+}
+.mechanic-detail__head .icon-tile {
+  border-color: rgba(138, 170, 255, 0.4);
+  background: var(--deep-primary);
+}
+.mechanic-detail__head h3 {
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+.mechanic-detail__head p {
+  color: var(--deep-muted);
+}
+.mechanic-detail__label {
+  color: var(--deep-link);
+}
+.mechanic-detail__body li {
+  border-bottom-color: var(--deep-border);
+}
+.mechanic-info p,
+.mechanic-info ul {
+  color: var(--deep-muted);
+}
+
+.mechanic-card:focus-visible,
+.builder-options button:focus-visible,
+.scenario-tabs button:focus-visible,
+.integration-card:focus-visible,
+.case-visual__counter button:focus-visible,
+.case-visual__flip:focus-visible {
+  outline: 2px solid var(--deep-link);
+  outline-offset: 3px;
+}
+
+/* ───────────── Конфигуратор ───────────── */
+.configurator__intro h2 {
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+.configurator__intro h2 span {
+  color: var(--deep-link);
+}
+.configurator__intro p {
+  color: var(--deep-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.builder-panel {
+  border-color: var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+}
+.builder-panel > h3 {
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+.builder-panel > h3 span {
+  color: var(--deep-link);
+}
+.builder-question {
+  border-bottom-color: var(--deep-border);
+}
+.builder-question legend {
+  font-weight: 400;
+}
+.builder-options button {
+  min-height: 32px;
+  padding: 4px 14px;
+  border: 1px solid var(--deep-border-2);
+  background: transparent;
+  color: var(--deep-text-soft);
+  font-size: 13px;
+  font-weight: 350;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.builder-options button:hover {
+  border-color: #3a3b40;
+  background: var(--deep-surface-2);
+}
+.builder-options button.is-selected {
+  border-color: var(--deep-primary);
+  background: var(--deep-primary);
+  color: #fff;
+}
+
+.project-summary {
+  border: 1px solid rgba(138, 170, 255, 0.32);
+  border-radius: var(--deep-radius-card);
+  background: linear-gradient(150deg, #0a2a8f 0%, #0037c2 52%, #1a5bff 135%);
+  box-shadow: 0 30px 80px rgba(0, 55, 194, 0.28);
+}
+.project-summary__eyebrow {
+  font-weight: 350;
+  opacity: 0.85;
+}
+.project-summary h3 {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.summary-tags span {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+}
+.project-summary__cta .arrow-button {
+  padding: 8px 20px;
+  font: 350 18px/1.25 var(--font-mono);
+  letter-spacing: 0;
+}
+.project-summary__cta .arrow-button__icon {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+  background: transparent;
+  color: var(--deep-primary);
+}
+
+/* окно «Обсудить проект» */
+
+/* ───────────── Аналитика ───────────── */
+.analytics__heading h2 {
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+.analytics__heading h2 span {
+  color: var(--deep-link);
+}
+.analytics__heading p {
+  color: var(--deep-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.scenario-tabs {
+  border: 1px solid var(--deep-border);
+  background: var(--deep-surface);
+}
+.scenario-tabs button {
+  color: var(--deep-text-soft);
+  font-weight: 350;
+}
+.scenario-tabs button:hover {
+  background: var(--deep-surface-2);
+  color: var(--deep-text);
+}
+.scenario-tabs button.is-selected,
+.scenario-tabs button.is-selected:hover {
+  background: var(--deep-primary);
+  color: #fff;
+}
+
+/* ───────────── FAQ ───────────── */
+.faq-item {
+  border: 1px solid var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease;
+}
+.faq-item:hover {
+  border-color: var(--deep-border-2);
+}
+.faq-item.is-open {
+  border-color: rgba(108, 149, 255, 0.34);
+  background: var(--deep-tint);
+}
+.faq-item__trigger {
+  font-weight: 350;
+}
+.faq-item__trigger img {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+  /* закрыт — стрелка вниз, открыт — вверх (в исходной вёрстке было наоборот) */
+  transform: rotate(0);
+}
+.faq-item.is-open .faq-item__trigger img {
+  transform: rotate(180deg);
+}
+.faq-item__panel p {
+  color: var(--deep-muted);
+}
+
+/* ───────────── Подвал и страница кейсов ───────────── */
+
+.cases-page {
+  padding-top: 0;
+}
+.cases-page__bar {
+  width: 100%;
+  min-height: 88px;
+  margin-bottom: 48px;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--deep-border);
+  background: rgba(15, 15, 16, 0.86);
+}
+.cases-page__brand {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
+}
+.cases-page__nav a {
+  border-radius: 8px;
+  color: var(--deep-text);
+  font-size: 18px;
+  font-weight: 350;
+}
+.cases-page__nav a:hover {
+  background: var(--deep-surface-2);
+  color: var(--deep-text);
+}
+.cases-page__bar .brief-button {
+  width: auto;
+  flex-basis: auto;
+}
+.cases-card {
+  border-color: var(--deep-border);
+  border-radius: var(--deep-radius-card);
+  background: var(--deep-surface);
+}
+.cases-card__kind {
+  color: var(--deep-link);
+  font-weight: 350;
+}
+.cases-card__body h2 {
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+.cases-card__text {
+  color: var(--deep-muted);
+}
+
+@media (max-width: 1200px) {
+  .case-study__inner,
+  .configurator__inner,
+  .analytics__inner {
+    width: calc(100% - 48px);
+  }
+}
+@media (max-width: 800px) {
+  .audience,
+  .mechanics,
+  .faq,
+  .case-study,
+  .configurator,
+  .analytics {
+    margin-top: 56px;
+  }
+  .case-study__inner,
+  .configurator__inner,
+  .analytics__inner {
+    width: calc(100% - 32px);
+  }
+  .cases-page__bar {
+    padding: 0 16px;
+  }
+}
+@media (max-width: 430px) {
+  .case-study__inner,
+  .configurator__inner,
+  .analytics__inner {
+    width: calc(100% - 24px);
+  }
+}
+
+.compact-cta {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* планшеты: компактная шапка (в исходной вёрстке так же уменьшались пункты меню) и одна колонка там, где две стали тесными */
+@media (max-width: 1100px) {
+  .site-header {
+    padding: 0 24px;
+    gap: 16px;
+  }
+  .site-nav {
+    gap: 2px;
+  }
+  .site-nav a {
+    padding: 8px 10px;
+    font-size: 15px;
+  }
+  .brief-button {
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+}
+@media (max-width: 960px) {
+  .case-study__body,
+  .mechanics__layout {
+    grid-template-columns: 1fr;
+  }
+  .mechanic-detail {
+    position: static;
+  }
+}
+
+/* кнопка в карточке механики может переноситься — иначе при моноширинном шрифте она выпирает из узкой колонки */
+.mechanic-detail .arrow-button,
+.mechanic-info .arrow-button {
+  max-width: 100%;
+  font-size: 16px;
+  text-align: left;
+  white-space: normal;
+}
+
+/* ───────────── Телефоны и узкие экраны ───────────── */
+@media (max-width: 800px) {
+  .arrow-button,
+  .compact-cta {
+    font-size: 15px;
+  }
+  /* в исходной вёрстке правило для ≤1200px шло позже и возвращало две колонки на телефоне */
+  .case-study__body {
+    grid-template-columns: 1fr;
+  }
+  .site-header {
+    height: 72px;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .brand-mark__logo {
+    width: 88px;
+  }
+  .brand-mark small {
+    font-size: 10px;
+  }
+  .brief-button {
+    min-height: 44px;
+    padding: 6px 16px;
+    font-size: 16px;
+  }
+  .site-nav a {
+    font-size: 16px;
+  }
+  .hero__body {
+    padding-bottom: 72px;
+  }
+  .hero__surface {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0,
+      #000 calc(100% - 120px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 0,
+      #000 calc(100% - 120px),
+      transparent 100%
+    );
+  }
+  .cases-page__bar {
+    min-height: 72px;
+  }
+}
+@media (max-width: 480px) {
+  .hero__content h1 {
+    font-size: clamp(26px, 7.9vw, 34px);
+  }
+}
+
+/* Иконки механик — как значки услуг на deep-agency.ru: минималистичный глиф с мягким
+   размытым краем, без плитки и бликов. Цвет у каждой механики свой — из палитры акцентов
+   (см. accent.css и поле accent в mechanicsCatalog). На активной (кобальтовой) карточке глиф белый. */
+.mechanic-art {
+  width: 72px;
+  height: 72px;
+  flex-basis: 72px;
+  margin: -9px 0 -4px -8px;
+  border-radius: 0;
+}
+.mechanic-art img {
+  filter: none;
+}
+.mechanic-art--detail {
+  width: 76px;
+  height: 76px;
+  flex-basis: 76px;
+  margin: -8px 0 -8px -8px;
+}
+.mechanic-card.is-active .mechanic-art {
+  box-shadow: none;
+}
+.mechanic-card.is-active .mechanic-art img {
+  filter: brightness(0) invert(1);
+}
+@media (max-width: 800px) {
+  .mechanic-art {
+    width: 60px;
+    height: 60px;
+    flex-basis: 60px;
+    margin: -7px 0 -3px -6px;
+    border-radius: 0;
+  }
+  .mechanic-art--detail {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+    margin: -6px 0 -6px -6px;
+  }
+}

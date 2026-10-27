@@ -1,110 +1,137 @@
+/**
+ * Палитра акцентов: у каждой задачи свой цвет (иконка, свечение карточки, точка в фильтре).
+ * Значения — в src/styles/accent.css (`[data-accent='…']`), здесь только имена.
+ */
+export type Accent = 'blue' | 'violet' | 'cyan' | 'coral' | 'amber' | 'green';
+
+/** Порядок ссылок = порядок секций на странице. */
 export const navigation = [
-  ['Что делаем', '#what-we-do'],
-  ['Механики', '#mechanics'],
+  ['Для кого', '#what-we-do'],
+  ['Возможности', '#mechanics'],
+  ['Как работаем', '#process'],
   ['Кейсы', '#cases'],
-  ['Интеграции', '#integrations'],
   ['FAQ', '#faq'],
 ] as const;
 
-export const heroSubtitle =
-  'Берём на себя разработку, дизайн и контент. Собираем проект на проверенной платформенной базе и докручиваем механику, сценарий и интеграции под вашу задачу';
+/**
+ * Оффер первого экрана — отвечает на три вопроса: что делаем (игровые механики под ключ),
+ * для кого (HR и маркетинг: сотрудники, клиенты, покупатели) и как (разработка, дизайн
+ * и контент на нашей стороне, готовые модули + кастом).
+ */
+export const heroTitle = {
+  accent: 'Игровые механики',
+  rest: ' для HR и маркетинга',
+} as const;
 
-export const heroCards = [
-  {
-    id: 'span',
-    title: 'От недели до полугода',
-    titleLines: ['От недели', 'до полугода'],
-    subtitle: 'От короткой кампании до постоянной платформы',
-    subtitleLines: ['От короткой кампании', 'до постоянной платформы'],
-    icon: 'span' as const,
-    type: 'timer' as const,
-    meta: 'Гибкий срок',
-  },
-  {
-    id: 'launch',
-    title: 'Запуск от 1 недели',
-    titleLines: ['Запуск от 1', 'недели'],
-    subtitle: 'Проверенная база ускоряет разработку',
-    subtitleLines: ['Проверенная база', 'ускоряет разработку'],
-    icon: 'launch' as const,
-    type: 'default' as const,
-  },
-  {
-    id: 'progress',
-    title: 'Баллы, рейтинг и прогресс',
-    titleLines: ['Баллы, рейтинг и', 'прогресс'],
-    subtitle: 'Единая система мотивации участников',
-    subtitleLines: ['Единая система мотивации', 'участников'],
-    icon: 'progress' as const,
-    type: 'progress' as const,
-    meta: 'Единый контур',
-  },
-  {
-    id: 'cost',
-    title: 'Меньше затрат на активности',
-    titleLines: ['Меньше затрат', 'на активности'],
-    subtitle: 'Один инструмент',
-    subtitleLines: ['Один инструмент'],
-    icon: 'cost' as const,
-    type: 'team' as const,
-    meta: 'Один инструмент',
-    longTitle: true,
-  },
-  {
-    id: 'team',
-    title: 'Нативный тимбилдинг',
-    titleLines: ['Нативный', 'тимбилдинг'],
-    subtitle: 'В рабочем сценарии',
-    subtitleLines: ['В рабочем сценарии'],
-    icon: 'team' as const,
-    type: 'team' as const,
-    meta: 'В рабочем сценарии',
-  },
+/**
+ * Два предложения: что делаем и зачем / как работаем. На десктопе — две строки.
+ * Неразрывный пробел перед тире — чтобы тире не оказывалось в начале строки.
+ */
+export const heroSubtitle = [
+  'Квизы, челленджи, баллы и призы — чтобы вовлекать сотрудников, клиентов и покупателей.',
+  'Разработку, дизайн и контент берём на себя — запуск на готовых модулях от 1 недели.',
 ] as const;
 
-/** @deprecated use heroCards */
-export const heroAdvantages = heroCards;
+/**
+ * Строка «для задач» под кнопками: короткие названия сценариев из блока «Для кого». Каждая ведёт
+ * в раздел «Кейсы» на нужную задачу (`categoryId` совпадает с `caseCategories`); у «Своей механики»
+ * готового кейса нет — она открывает в «Возможностях» кастомные механики.
+ */
+export const heroAudience = [
+  { label: 'HR и внутриком', accent: 'blue', categoryId: 'hr' },
+  { label: 'Мероприятия', accent: 'cyan', categoryId: 'events' },
+  { label: 'Лояльность и клубы', accent: 'violet', categoryId: 'loyalty' },
+  { label: 'Спецпроекты', accent: 'coral', categoryId: 'external' },
+  { label: 'Трейд-маркетинг', accent: 'amber', categoryId: 'trade' },
+  { label: 'Своя механика', accent: 'green', categoryId: null },
+] as const satisfies readonly {
+  label: string;
+  accent: Accent;
+  categoryId: CaseCategoryId | null;
+}[];
+
+/**
+ * Карточки слайдера на первом экране — про платформу, а не про список механик (он ниже, в «Возможностях»):
+ * готовая игровая основа, баллы и награды, каналы, аналитика и механика на заказ. Скорость запуска
+ * сказана в подзаголовке и в FAQ, поэтому отдельной карточки у неё нет.
+ * Мини-интерфейс внутри карточки рисует HeroCarousel по `id`; цифры в карточках с пометкой `demo` —
+ * иллюстрация, а не статистика (как и в разделе «Аналитика»).
+ * Переносы строк заголовка заданы вручную: всегда две строки, до ~15 знаков в каждой.
+ */
+export type HeroCard = {
+  id: 'games' | 'rewards' | 'online' | 'analytics' | 'custom';
+  /** Короткий ярлык над заголовком. */
+  tag: string;
+  title: string;
+  titleLines: readonly [string, string];
+  text: string;
+  /** Показать пометку «демо-данные»: в мини-интерфейсе иллюстративные цифры. */
+  demo?: boolean;
+};
+
+/**
+ * Порядок важен: карточка с индексом 0 стоит в центре и видна чётче всех, поэтому первой идёт
+ * «Готовые игры» — то, что мы продаём. Слева от неё (последняя в списке) — «Механика на заказ»,
+ * справа — «Баллы, рейтинг и награды». Видны три карточки, остальные ждут «за кадром».
+ */
+export const heroCards: readonly HeroCard[] = [
+  {
+    id: 'games',
+    tag: 'Игры',
+    title: 'Готовые игры под ваш бренд',
+    titleLines: ['Готовые игры', 'под ваш бренд'],
+    text: 'Берём проверенную игру и меняем правила, оформление и награды под ваш проект.',
+  },
+  {
+    id: 'rewards',
+    tag: 'Награды',
+    title: 'Баллы, рейтинг и награды',
+    titleLines: ['Баллы, рейтинг', 'и награды'],
+    text: 'Участники видят прогресс и обменивают баллы на призы.',
+    demo: true,
+  },
+  {
+    id: 'online',
+    tag: 'Онлайн и офлайн',
+    title: 'Telegram, QR и web app',
+    titleLines: ['Telegram, QR', 'и web app'],
+    text: 'Задания и начисление баллов — онлайн и на площадке, в одном сценарии.',
+  },
+  {
+    id: 'analytics',
+    tag: 'Аналитика',
+    title: 'Аналитика онлайн',
+    titleLines: ['Аналитика', 'онлайн'],
+    text: 'Участники, задания и рейтинг — в одной панели.',
+    demo: true,
+  },
+  {
+    id: 'custom',
+    tag: 'Кастом',
+    title: 'Любая механика на заказ',
+    titleLines: ['Любая механика', 'на заказ'],
+    text: 'Не нашли нужную игру? Спроектируем механику и сценарий под вашу задачу.',
+  },
+];
 
 export const audienceHeading = {
   title: 'Для кого мы собираем проекты',
-  lead: 'Делаем интерактивные сценарии для разных задач и аудиторий — от внутренней команды до внешней кампании и отдельной платформы.',
+  lead: 'Выберите свою задачу — покажем похожий проект и подходящие механики.',
 } as const;
 
-export const audienceCards = [
-  {
-    id: 'hr',
-    icon: 'users',
-    title: 'HR и внутриком',
-    description:
-      'Онбординг, обучение, вовлечение и корпоративные события — в одном рабочем сценарии для команды.',
-  },
-  {
-    id: 'special',
-    icon: 'spark',
-    title: 'Интерактивные спецпроекты',
-    description:
-      'Игровые промо, челленджи, конкурсы и digital-активации под конкретный продукт или повод.',
-  },
-  {
-    id: 'external',
-    icon: 'megaphone',
-    title: 'Внешняя аудитория',
-    description:
-      'Брендовые кампании, промо продуктов и механики для клиентов, партнёров и широкой аудитории.',
-  },
-  {
-    id: 'platforms',
-    icon: 'layers',
-    title: 'Отдельные платформы',
-    description:
-      'Закрытые клубы, программы лояльности и долгие digital-среды, которые живут дольше одной кампании.',
-  },
-] as const;
-
+/**
+ * Пять типовых задач — они же фильтр в разделе «Кейсы» (`id` совпадает с `caseCategories`),
+ * названия вкладок аналитики и варианты в конфигураторе. Шестая карточка — «своя механика».
+ * Иллюстрации — public/images/audience/*.webp.
+ */
 export const caseCategories = [
   {
     id: 'hr',
     title: 'HR и внутриком',
+    lead: 'Игровой сценарий для онбординга, обучения и вовлечения сотрудников.',
+    tags: ['Онбординг', 'Обучение', 'Вовлечение', 'Корпоративные события'],
+    image: '/images/audience/hr.webp',
+    accent: 'blue' as Accent,
     benefits: [
       {
         title: 'Обучение и онбординг',
@@ -127,6 +154,15 @@ export const caseCategories = [
   {
     id: 'loyalty',
     title: 'Лояльность и закрытые клубы',
+    lead: 'Платформа, в которую участники возвращаются: статусы, задания и витрина наград.',
+    tags: [
+      'Закрытые клубы',
+      'Статусы и уровни',
+      'Витрина наград',
+      'Программы лояльности',
+    ],
+    image: '/images/audience/platforms.webp',
+    accent: 'violet' as Accent,
     benefits: [
       {
         title: 'Закрытый контур',
@@ -149,6 +185,15 @@ export const caseCategories = [
   {
     id: 'events',
     title: 'Онлайн- и офлайн-мероприятия',
+    lead: 'Один сценарий для площадки и онлайна: QR, задания, эфир и общий рейтинг.',
+    tags: [
+      'QR-активности',
+      'Прямые эфиры',
+      'Квизы и голосования',
+      'Telegram web app',
+    ],
+    image: '/images/audience/events.webp',
+    accent: 'cyan' as Accent,
     benefits: [
       {
         title: 'Один сценарий события',
@@ -171,6 +216,10 @@ export const caseCategories = [
   {
     id: 'external',
     title: 'Внешние спецпроекты',
+    lead: 'Игровые промо и брендированные кампании для клиентов и широкой аудитории.',
+    tags: ['Игровые промо', 'Челленджи', 'Конкурсы', 'Брендовые кампании'],
+    image: '/images/audience/external.webp',
+    accent: 'coral' as Accent,
     benefits: [
       {
         title: 'Бренд в центре сценария',
@@ -193,6 +242,15 @@ export const caseCategories = [
   {
     id: 'trade',
     title: 'Трейд-маркетинг',
+    lead: 'Покупка, баллы и приз в одной механике: проверка чеков и контроль кампании.',
+    tags: [
+      'Проверка чеков / ОФД',
+      'Баллы и призы',
+      'Призовой фонд',
+      'Контроль кампании',
+    ],
+    image: '/images/audience/trade.webp',
+    accent: 'amber' as Accent,
     benefits: [
       {
         title: 'Проверка чеков / ОФД',
@@ -216,40 +274,86 @@ export const caseCategories = [
 
 export type CaseCategoryId = (typeof caseCategories)[number]['id'];
 
-export const cases = [
+/**
+ * Визуальная тема кейса: у каждого клиента свой фирменный стиль (src/styles/brands.css,
+ * `[data-brand='…']`).
+ */
+export type CaseTheme =
+  | 'mts'
+  | 'mts-light'
+  | 'tbank'
+  | 'megafon'
+  | 'zewa'
+  | 'hh';
+
+export type CaseItem = {
+  id: string;
+  /** Как клиент называется сейчас. */
+  brand: string;
+  /** Прежнее название, если клиент переименован («ex-Тинькофф»): показываем рядом, чтобы его узнавали. */
+  brandNote?: string;
+  title: string;
+  description: string;
+  categoryId: CaseCategoryId;
+  task: string;
+  scale: string;
+  duration: string;
+  mechanics: readonly string[];
+  results: readonly { value: string; label: string }[];
+  artwork: 'mts' | 'club' | 'event' | 'promo' | 'referral';
+  theme: CaseTheme;
+  cover: string;
+};
+
+/** Бренд для текста и подписей: «Т-Банк (ex-Тинькофф)». */
+export function caseBrand(item: Pick<CaseItem, 'brand' | 'brandNote'>) {
+  return item.brandNote ? `${item.brand} (${item.brandNote})` : item.brand;
+}
+
+/** Ссылка на кейс в разделе «Кейсы» главной страницы: `/#case-<id>`. */
+export function caseHref(id: string) {
+  return `/#case-${id}`;
+}
+
+export const cases: readonly CaseItem[] = [
   {
     id: 'mts-30',
     brand: 'МТС',
     title: '30 лет',
     description:
       'Внутренняя юбилейная программа с играми, баллами и наградами для сотрудников.',
-    categoryId: 'hr' as const,
+    categoryId: 'hr',
     task: 'Собрать команду вокруг юбилея компании и дать понятный игровой маршрут участия.',
     scale: '24 000 участников',
     duration: 'Несколько недель активной программы',
+    mechanics: ['Игры', 'Баллы', 'Награды'],
     results: [
       { value: '3×', label: 'рост вовлечённости' },
       { value: '92%', label: 'положительных отзывов' },
     ],
     artwork: 'mts',
-    image: true,
+    theme: 'mts',
+    cover: '/images/cases/mts-30.webp',
   },
   {
-    id: 'tinkoff',
-    brand: 'Тинькофф',
+    id: 'tbank',
+    brand: 'Т-Банк',
+    brandNote: 'ex-Тинькофф',
     title: 'Клуб участников',
     description:
       'Закрытая digital-среда с уровнями доступа, регулярными активностями и витриной наград.',
-    categoryId: 'loyalty' as const,
+    categoryId: 'loyalty',
     task: 'Удержать интерес участников и превратить разовые механики в привычку возвращаться.',
     scale: 'Тысячи участников клуба',
     duration: 'Постоянная платформа',
+    mechanics: ['Уровни доступа', 'Регулярные активности', 'Витрина наград'],
     results: [
-      { value: 'Регулярный', label: 'ритм активностей' },
-      { value: 'Прозрачный', label: 'прогресс и статусы' },
+      { value: 'Уровни', label: 'доступа и статусы участников' },
+      { value: 'Витрина', label: 'наград и привилегий' },
     ],
     artwork: 'club',
-    image: false,
+    theme: 'tbank',
+    cover: '/images/cases/tbank.webp',
   },
   {
     id: 'mts-codyland',
@@ -257,16 +361,18 @@ export const cases = [
     title: 'Кодиленд',
     description:
       'Игровой спецпроект вокруг события: единый сценарий, активности на площадке и digital-слой.',
-    categoryId: 'events' as const,
+    categoryId: 'events',
     task: 'Связать офлайн-событие и digital-участие в одном маршруте.',
     scale: 'Массовое событие для большой аудитории',
     duration: 'От подготовки до проведения события',
+    mechanics: ['Единый сценарий', 'Активности на площадке', 'Онлайн-часть'],
     results: [
       { value: 'Онлайн + офлайн', label: 'единый сценарий' },
-      { value: 'Понятный', label: 'прогресс участников' },
+      { value: 'Digital-слой', label: 'и активности на площадке' },
     ],
     artwork: 'event',
-    image: false,
+    theme: 'mts-light',
+    cover: '/images/cases/mts-codyland.webp',
   },
   {
     id: 'megafon',
@@ -274,16 +380,18 @@ export const cases = [
     title: 'Брюс Уиллис',
     description:
       'Внешний брендовый спецпроект с игровой механикой и сильным визуальным образом.',
-    categoryId: 'external' as const,
+    categoryId: 'external',
     task: 'Собрать запоминающийся сценарий вокруг бренда и вовлечь широкую аудиторию.',
     scale: 'Кампания для внешней аудитории',
     duration: 'Срок рекламной кампании',
+    mechanics: ['Игровая механика', 'Визуал под бренд'],
     results: [
       { value: 'Игровой', label: 'маршрут вместо просмотра' },
       { value: 'Под бренд', label: 'сценарий и визуал' },
     ],
     artwork: 'promo',
-    image: false,
+    theme: 'megafon',
+    cover: '/images/cases/megafon.webp',
   },
   {
     id: 'zewa',
@@ -291,16 +399,18 @@ export const cases = [
     title: 'Трейд-механика',
     description:
       'Промо с проверкой покупок, баллами и призовым фондом для торговой активности.',
-    categoryId: 'trade' as const,
+    categoryId: 'trade',
     task: 'Связать покупку, участие в механике и выдачу награды в одном контуре.',
     scale: 'Федеральная трейд-кампания',
     duration: 'Промо-период',
+    mechanics: ['Проверка чеков', 'Баллы', 'Призовой фонд'],
     results: [
-      { value: 'Чеки', label: 'и участие в одной логике' },
-      { value: 'Контроль', label: 'кампании прозрачен' },
+      { value: 'Чеки', label: 'и баллы в одной механике' },
+      { value: 'Призовой фонд', label: 'и проверка покупок' },
     ],
     artwork: 'referral',
-    image: false,
+    theme: 'zewa',
+    cover: '/images/cases/zewa.webp',
   },
   {
     id: 'headhunter',
@@ -308,35 +418,20 @@ export const cases = [
     title: 'Внешний спецпроект',
     description:
       'Брендированная механика для внешней аудитории: сценарий, контент и визуал под задачу кампании.',
-    categoryId: 'external' as const,
+    categoryId: 'external',
     task: 'Показать продукт через участие, а не через статичный лендинг.',
     scale: 'Кампания для внешней аудитории',
     duration: 'Срок спецпроекта',
+    mechanics: ['Игровой маршрут', 'Контент под задачу', 'Визуал под бренд'],
     results: [
       { value: 'Вовлечение', label: 'через игровой маршрут' },
       { value: 'Под задачу', label: 'механика и визуал' },
     ],
     artwork: 'promo',
-    image: false,
+    theme: 'hh',
+    cover: '/images/cases/headhunter.webp',
   },
-  {
-    id: 'telegram-bots',
-    brand: 'Deep',
-    title: 'Telegram-боты с web app',
-    description:
-      'Онлайн- и офлайн-активности, QR-коды, задания и начисление баллов в одном сценарии.',
-    categoryId: 'events' as const,
-    task: 'Запустить активности там, где уже есть аудитория — в мессенджере и на площадке.',
-    scale: 'От локальной команды до массового события',
-    duration: 'От короткой активации до серии активностей',
-    results: [
-      { value: 'QR + баллы', label: 'в одном контуре' },
-      { value: 'Без лишнего', label: 'отдельного сайта' },
-    ],
-    artwork: 'bot',
-    image: false,
-  },
-] as const;
+];
 
 export const mechanicsCatalog = [
   {
@@ -352,6 +447,7 @@ export const mechanicsCatalog = [
       'Брендирование и правила под конкретный проект',
     ],
     icon: 'quiz',
+    accent: 'coral' as Accent,
   },
   {
     id: 'custom',
@@ -365,7 +461,8 @@ export const mechanicsCatalog = [
       'Уникальный визуал и контент под бренд',
       'Связка с рейтингом, наградами и интеграциями',
     ],
-    icon: 'challenge',
+    icon: 'blocks',
+    accent: 'green' as Accent,
   },
   {
     id: 'integrations',
@@ -375,18 +472,19 @@ export const mechanicsCatalog = [
     description:
       'Подключаем платформу через API, webhooks, SSO или кастомный обмен данными, если система клиента предоставляет технический доступ. Не обещаем готовую интеграцию со всеми системами из коробки: возможность и объём определяются после технического анализа.',
     capabilities: [
-      'HRIS / SAP SuccessFactors',
-      'ATS / Huntflow',
-      'LMS',
-      'SSO',
+      'HR-системы (HRIS, SAP SuccessFactors)',
+      'Рекрутинг (ATS, Huntflow)',
+      'Обучающие платформы (LMS)',
+      'Единый вход (SSO)',
       'Корпоративный портал',
       'Teams / Microsoft 365',
-      'CRM / Salesforce / amoCRM',
-      'BI',
-      'API клиента',
-      'Webhooks',
+      'CRM (Salesforce, amoCRM)',
+      'BI-системы',
+      'API вашей системы',
+      'Webhooks — обмен событиями',
     ],
-    icon: 'catch',
+    icon: 'plug',
+    accent: 'cyan' as Accent,
   },
   {
     id: 'teams',
@@ -399,7 +497,8 @@ export const mechanicsCatalog = [
       'Челленджи на время, очки и совместный прогресс',
       'Сценарии для офисов, городов и подразделений',
     ],
-    icon: 'challenge',
+    icon: 'trophy',
+    accent: 'amber' as Accent,
   },
   {
     id: 'learning',
@@ -414,7 +513,8 @@ export const mechanicsCatalog = [
       'Баллы, уровни и прогресс по программе',
       'Связка с корпоративными системами при наличии доступа',
     ],
-    icon: 'collection',
+    icon: 'learning',
+    accent: 'blue' as Accent,
   },
   {
     id: 'shop',
@@ -427,7 +527,8 @@ export const mechanicsCatalog = [
       'Лимиты, роли и статусы доступа',
       'Учёт выдачи и остатков',
     ],
-    icon: 'shop',
+    icon: 'gift',
+    accent: 'violet' as Accent,
   },
   {
     id: 'live',
@@ -440,7 +541,8 @@ export const mechanicsCatalog = [
       'Квизы и голосования во время эфира',
       'Общий рейтинг по итогам стрима',
     ],
-    icon: 'poll',
+    icon: 'video',
+    accent: 'cyan' as Accent,
   },
   {
     id: 'receipts',
@@ -453,11 +555,27 @@ export const mechanicsCatalog = [
       'Связка покупки с баллами и призами',
       'Контроль кампании и антифрод-сценарии',
     ],
-    icon: 'clicker',
+    icon: 'receipt',
+    accent: 'amber' as Accent,
   },
 ] as const;
 
 export const faqItems = [
+  {
+    question: 'Что вы делаете и что нужно от нас?',
+    answer:
+      'Мы берём на себя разработку, дизайн и контент: проектируем механику и сценарий, собираем проект на платформенной базе, запускаем его и помогаем команде управлять активностями. От вас — задача, фирменные материалы и технические доступы, если нужны интеграции.',
+  },
+  {
+    question: 'Как быстро можно запустить проект?',
+    answer:
+      'Проект на готовых модулях можно запустить от 1 недели. Кастомные механики и интеграции занимают больше времени — срок назовём после короткого брифа.',
+  },
+  {
+    question: 'Сколько стоит проект?',
+    answer:
+      'Стоимость зависит от масштаба, набора механик, интеграций и сроков. Обсудим задачу и подготовим оценку после короткого брифа.',
+  },
   {
     question:
       'У нас уже есть сайт или внутренний портал. Зачем ещё одна платформа?',
@@ -489,16 +607,6 @@ export const faqItems = [
     answer:
       'Нет. Платформа подходит для регулярных кампаний, программ лояльности и нескольких событий в течение года.',
   },
-  {
-    question: 'Нам нужно самостоятельно собирать проект?',
-    answer:
-      'Нет. Мы проектируем и запускаем решение, затем помогаем команде управлять контентом и активностями.',
-  },
-  {
-    question: 'Сколько стоит проект?',
-    answer:
-      'Стоимость зависит от масштаба, набора механик, интеграций и сроков. Обсудим задачу и подготовим оценку после короткого брифа.',
-  },
 ] as const;
 
 export function featuredCaseForCategory(categoryId: CaseCategoryId) {
@@ -515,3 +623,87 @@ export function navHref(href: string, pathname: string) {
   }
   return href;
 }
+
+/** Шестая карточка блока «Для кого»: задача, для которой нет готовой механики. */
+export const customScenario = {
+  id: 'custom',
+  title: 'Нестандартная задача',
+  lead: 'Нужна механика, которой нет среди готовых? Придумаем правила, сценарий и визуал под вас.',
+  tags: ['Свои правила', 'Свой визуал', 'Интеграции по задаче'],
+  image: '/images/audience/custom.webp',
+  accent: 'green' as Accent,
+} as const;
+
+/** Чёткая версия иллюстрации (рядом лежит `<имя>-sharp.webp`): показывается при наведении на карточку. */
+export function sharpImage(image: string) {
+  return image.replace(/\.webp$/, '-sharp.webp');
+}
+
+export type AudienceCard = {
+  id: string;
+  title: string;
+  lead: string;
+  tags: readonly string[];
+  image: string;
+  accent: Accent;
+  /** Раздел «Кейсы» откроется на этой задаче. null — карточка ведёт в форму обсуждения. */
+  categoryId: CaseCategoryId | null;
+};
+
+export const audienceCards: readonly AudienceCard[] = [
+  ...caseCategories.map((item) => ({
+    id: item.id,
+    title: item.title,
+    lead: item.lead,
+    tags: item.tags,
+    image: item.image,
+    accent: item.accent,
+    categoryId: item.id,
+  })),
+  { ...customScenario, categoryId: null },
+];
+
+/** Бренды из кейсов — строка «Проекты для …» под кнопками первого экрана. */
+export const heroProof = {
+  label: 'Проекты для',
+  brands: Array.from(new Set(cases.map((item) => item.brand))),
+};
+
+export const mechanicsLead =
+  'Из чего собираем проект: выберите возможность — покажем, что внутри. Чего нет в списке, спроектируем под вашу задачу.';
+
+/**
+ * «Как мы работаем»: четыре шага от брифа до запуска. Список того, что входит в проект, здесь не
+ * повторяется: он уже есть в «Возможностях», карусели первого экрана и разделе «Аналитика».
+ */
+export const processSection = {
+  title: 'Как мы',
+  accent: 'работаем',
+  lead: 'От брифа до запуска ведём проект сами: вам не нужно собирать команду разработчиков, дизайнеров и контент-менеджеров.',
+  steps: [
+    {
+      title: 'Бриф',
+      text: 'Обсуждаем задачу, аудиторию и сроки. Подбираем готовые механики или решаем, что делаем кастомно.',
+    },
+    {
+      title: 'Сценарий',
+      text: 'Проектируем маршрут участника: правила, баллы, награды и роли. Собираем его на проверенной платформенной базе.',
+    },
+    {
+      title: 'Сборка',
+      text: 'Делаем дизайн под ваш бренд, готовим контент и подключаем нужные сервисы — если есть технический доступ.',
+    },
+    {
+      title: 'Запуск и сопровождение',
+      text: 'Запускаем проект, следим за ним по аналитике и помогаем команде управлять контентом и активностями.',
+    },
+  ],
+} as const;
+
+export const finalCta = {
+  title: 'Расскажите задачу —',
+  accent: 'обсудим и подготовим оценку',
+  text: 'Короткий бриф: что хотите запустить и для кого. Подберём готовые механики или предложим свою.',
+  primary: 'Обсудить проект',
+  secondary: 'Собрать пример проекта',
+} as const;
